@@ -21,16 +21,18 @@ export function MeuPerfil() {
   const navegar = useNavigate();
   const { perfil, limpar } = usePerfil();
   const [confirmando, setConfirmando] = useState(false);
-  const [tema, escolherTema] = useTema();
 
+  // O tema não depende do cadastro: aparece mesmo antes de a paciente criar o perfil.
   if (!perfil) {
     return (
-      <main className="tela">
+      <main className="tela tela-estreita">
         <Logo tamanho={30} />
+        <h1 style={{ fontSize: 'var(--fs-xl)', fontWeight: 800 }}>Meu perfil</h1>
         <p>Você ainda não criou seu perfil.</p>
         <button type="button" className="btn btn-primario" onClick={() => navegar('/comecar')}>
           Criar perfil
         </button>
+        <SeletorTema />
       </main>
     );
   }
@@ -101,20 +103,7 @@ export function MeuPerfil() {
         </button>
       </section>
 
-      <section className="secao">
-        <h2 className="rotulo" id="aparencia">Aparência</h2>
-        <div className="segmentado" role="group" aria-labelledby="aparencia">
-          {TEMAS.map((t) => (
-            <button key={t.id} type="button" aria-pressed={tema === t.id} onClick={() => escolherTema(t.id)}>
-              <Icone nome={t.icone} tamanho={18} />
-              {t.rotulo}
-            </button>
-          ))}
-        </div>
-        <span className="texto-sec">
-          {tema === 'sistema' ? 'Segue o tema claro ou escuro do seu aparelho.' : 'Vale para este aparelho.'}
-        </span>
-      </section>
+      <SeletorTema />
 
       <section className="secao">
         <h2 className="rotulo">Seus dados</h2>
@@ -152,6 +141,26 @@ export function MeuPerfil() {
       </section>
       <p className="faixa-demo">Mútua · cuidar é uma troca</p>
     </main>
+  );
+}
+
+function SeletorTema() {
+  const [tema, escolherTema] = useTema();
+  return (
+    <section className="secao">
+      <h2 className="rotulo" id="aparencia">Aparência</h2>
+      <div className="segmentado" role="group" aria-labelledby="aparencia">
+        {TEMAS.map((t) => (
+          <button key={t.id} type="button" aria-pressed={tema === t.id} onClick={() => escolherTema(t.id)}>
+            <Icone nome={t.icone} tamanho={18} />
+            {t.rotulo}
+          </button>
+        ))}
+      </div>
+      <span className="texto-sec">
+        {tema === 'sistema' ? 'Segue o tema claro ou escuro do seu aparelho.' : 'Vale para este aparelho.'}
+      </span>
+    </section>
   );
 }
 
