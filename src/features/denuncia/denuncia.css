@@ -1,0 +1,98 @@
+.den-sigilo strong {
+  font-size: var(--fs-sm);
+}
+.den-sigilo svg {
+  color: var(--badge-validation);
+}
+.den-motivo {
+  min-height: 150px;
+}
+.den-contador {
+  align-self: flex-end;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--t-rapida) var(--ease);
+}
+.den-contador.ok {
+  color: var(--ok);
+}
+.den-sim-nao {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* Resumo da confirmação */
+.den-resumo {
+  margin: 0;
+  gap: 14px;
+}
+.den-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.den-item:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.den-item dt {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.den-item dd {
+  margin: 0;
+  font-weight: 700;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.den-motivo-lido {
+  font-weight: 400 !important;
+  white-space: pre-wrap;
+}
+.den-erro {
+  color: var(--alerta);
+  background: color-mix(in srgb, var(--alerta) 10%, transparent);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+
+/* Sucesso */
+.den-sucesso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  padding-top: 12px;
+}
+.den-sucesso h1 {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+}
+.den-sucesso-icone {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 14%, transparent);
+  animation: pulsa 420ms var(--ease) 200ms;
+}
+.den-protocolo {
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+.den-protocolo strong {
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  color: var(--brand-primary);
+  overflow-wrap: anywhere;
+}

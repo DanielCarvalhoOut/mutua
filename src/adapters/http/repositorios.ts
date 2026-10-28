@@ -4,8 +4,11 @@
 //   GET  {api}/medicas/{id}                         -> Medica | 404
 //   GET  {api}/medicas/{id}/avaliacoes              -> Avaliacao[]
 //   POST {api}/avaliacoes                           -> Avaliacao (append-only)
+//   POST {api}/denuncias                            -> ComprovanteDenuncia (paciente autenticada)
+//   GET/PATCH de denúncias existem só no painel administrativo, nunca neste app.
 
-import type { AvaliacaoRepository, MedicaRepository } from '@/domain/ports';
+import type { ComprovanteDenuncia, NovaDenuncia } from '@/domain/denuncia';
+import type { AvaliacaoRepository, DenunciaRepository, MedicaRepository } from '@/domain/ports';
 import type { Avaliacao, EspecialidadeId, Medica, NovaAvaliacao } from '@/domain/types';
 
 async function requisitar<T>(url: string, init?: RequestInit): Promise<T> {
@@ -30,6 +33,19 @@ export class HttpMedicaRepository implements MedicaRepository {
       return await requisitar<Medica>(`${this.api}/medicas/${encodeURIComponent(id)}`);
     } catch {
       return null;
+    }
+  }
+}
+
+export class HttpDenunciaRepository implements DenunciaRepository {
+  constructor(private readonly api: string) {}
+
+  async registrar(nova: NovaDenuncia): Promise<ComprovanteDenuncia> {
+    // O erro mostrado à paciente é genérico: nada do conteúdo da denúncia vai para mensagens ou logs.
+    try {
+      return await requisitar<ComprovanteDenuncia>(`${this.api}/denuncias`, { method: 'POST', body: JSON.stringify(nova) });
+    } catch {
+      throw new Error('Não conseguimos registrar a denúncia agora. Seus dados continuam aqui; tente de novo em instantes.');
     }
   }
 }

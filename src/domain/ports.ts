@@ -2,6 +2,7 @@
 // implementa: hoje `adapters/mock`, amanhã `adapters/http` (backend próprio) e os
 // conectores de `integrations/` (CNES, CFM, operadoras). Trocar a fonte não muda as telas.
 
+import type { ComprovanteDenuncia, NovaDenuncia } from './denuncia';
 import type { Avaliacao, EspecialidadeId, Medica, NovaAvaliacao, PerfilPaciente } from './types';
 
 export interface MedicaRepository {
@@ -19,7 +20,18 @@ export interface AvaliacaoRepository {
   registrar(nova: NovaAvaliacao): Promise<Avaliacao>;
 }
 
+/**
+ * Canal de denúncias. Do lado da paciente só existe envio, e a resposta é só o comprovante.
+ * Listar, ver detalhes e mudar status são exclusivos do perfil administrativo, no servidor;
+ * a médica denunciada nunca vê nem é notificada.
+ */
+export interface DenunciaRepository {
+  registrar(nova: NovaDenuncia): Promise<ComprovanteDenuncia>;
+}
+
 export interface PerfilRepository {
+  /** Identificador da paciente nesta sessão (no backend, vem da autenticação). */
+  identificador(): string;
   carregar(): PerfilPaciente | null;
   salvar(perfil: PerfilPaciente): void;
   limpar(): void;

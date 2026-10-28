@@ -61,6 +61,27 @@ Interfaces em `src/integrations/fontes.ts`:
 | Operadoras de plano | Privada | Rede credenciada e agenda |
 | Clínicas parceiras | Privada | Agenda e código da consulta, que comprova a avaliação |
 
+## Denúncias
+
+**No app (pronto):** `features/denuncia` (formulário, confirmação e sucesso), regras em `domain/denuncia.ts` e porta `DenunciaRepository`, que só tem `registrar`.
+
+- Validação: médica, data/hora não futura, tipo, motivo com 20 a 3000 caracteres e escolha de anonimato.
+- Anônima: `montarDenuncia` descarta o identificador da paciente antes do envio; ele não sai do aparelho.
+- A resposta é só o comprovante (`protocolo`, `criadoEm`). O app não tem como listar nem consultar denúncias.
+- Reenvio idêntico em até 2 minutos é bloqueado.
+- Nada do conteúdo vai para mensagens de erro ou console. O adaptador local guarda os registros só em memória.
+
+**Contrato do backend (a implementar):**
+
+| Rota | Quem pode | Observação |
+|---|---|---|
+| `POST /denuncias` | Paciente autenticada | Se `anonima`, ignora qualquer `pacienteId` recebido e não grava IP nem sessão junto ao registro. Gera protocolo único (índice único no banco). Rate limit por usuária. |
+| `GET /denuncias` | Só perfil `COMPLIANCE` | Nunca exposto para médica nem paciente. |
+| `GET /denuncias/:id` | Só perfil `COMPLIANCE` | Sem permissão: 404, sem revelar se existe. |
+| `PATCH /denuncias/:id/status` | Só perfil `COMPLIANCE` | `ABERTA → EM_ANALISE → CONCLUIDA`, com log de auditoria (quem, quando, de/para). |
+
+Tabelas previstas: `denuncia` (id, protocolo único, paciente_id nulo se anônima, medica_id, consulta_id opcional, tipo_ocorrencia, motivo criptografado, anonima, status, criado_em, atualizado_em) e `denuncia_auditoria` (id, denuncia_id, usuario_id, status_de, status_para, criado_em). A médica denunciada nunca é notificada. Anexos (imagem/PDF) entram quando houver armazenamento de arquivos.
+
 ## LGPD
 
 - Vivências da médica: dado sensível (art. 11), com consentimento explícito registrado (`consentimentoEm`) e revogável.

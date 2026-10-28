@@ -2,14 +2,26 @@
 // Para ligar o backend, basta VITE_DATA_SOURCE=api e VITE_API_URL.
 
 import { createContext, useContext, type ReactNode } from 'react';
-import { HttpAvaliacaoRepository, HttpMedicaRepository } from '@/adapters/http/repositorios';
-import { LocalAvaliacaoRepository, LocalPerfilRepository, MockMedicaRepository } from '@/adapters/mock/repositorios';
+import { HttpAvaliacaoRepository, HttpDenunciaRepository, HttpMedicaRepository } from '@/adapters/http/repositorios';
+import {
+  LocalAvaliacaoRepository,
+  LocalDenunciaRepository,
+  LocalPerfilRepository,
+  MockMedicaRepository,
+} from '@/adapters/mock/repositorios';
 import { RegrasResumoProvider } from '@/adapters/resumo/regras';
-import type { AvaliacaoRepository, MedicaRepository, PerfilRepository, ResumoProvider } from '@/domain/ports';
+import type {
+  AvaliacaoRepository,
+  DenunciaRepository,
+  MedicaRepository,
+  PerfilRepository,
+  ResumoProvider,
+} from '@/domain/ports';
 
 export interface Servicos {
   medicas: MedicaRepository;
   avaliacoes: AvaliacaoRepository;
+  denuncias: DenunciaRepository;
   perfil: PerfilRepository;
   resumo: ResumoProvider;
 }
@@ -22,13 +34,20 @@ export function criarServicos(env: ImportMetaEnv = import.meta.env): Servicos {
     return {
       medicas: new HttpMedicaRepository(env.VITE_API_URL),
       avaliacoes: new HttpAvaliacaoRepository(env.VITE_API_URL),
+      denuncias: new HttpDenunciaRepository(env.VITE_API_URL),
       perfil,
       resumo,
     };
   }
 
   const avaliacoes = new LocalAvaliacaoRepository();
-  return { medicas: new MockMedicaRepository(avaliacoes), avaliacoes, perfil, resumo };
+  return {
+    medicas: new MockMedicaRepository(avaliacoes),
+    avaliacoes,
+    denuncias: new LocalDenunciaRepository(),
+    perfil,
+    resumo,
+  };
 }
 
 const ServicosContext = createContext<Servicos | null>(null);

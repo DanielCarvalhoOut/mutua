@@ -15,7 +15,8 @@ Recomendação e priorização de consultas e exames com médicas que compartilh
 | Minhas médicas | **O que priorizar agora** (mamografia, preventivo) e **top 5** com % de afinidade, o que tem e o que não tem do que você pediu, e "por que recomendamos mesmo assim" quando nenhuma compartilha todas as vivências |
 | Perfil da médica | CRM e RQE verificados, composição do match com pesos, vivências autodeclaradas (LGPD), resumo automático das avaliações, nota entre mulheres parecidas, critérios de respeito e avaliações protegidas |
 | Avaliar consulta | Nota, critérios (respeito, explicou, consentimento, acompanhante), texto e vivências da autora; publicada, a médica não edita nem apaga |
-| Meu perfil | Resumo, status dos exames e **apagar meus dados** |
+| Reportar um problema | Denúncia sigilosa de médica (assédio, conduta antiética, negligência...): formulário → confirmação com declaração de veracidade → protocolo `DEN-AAAAMMDD-XXXX` |
+| Meu perfil | Resumo, status dos exames, acesso à denúncia, tema claro/escuro/automático e **apagar meus dados** |
 
 ### Regras de negócio
 

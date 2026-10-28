@@ -3,6 +3,7 @@ import { HashRouter, Navigate, NavLink, Outlet, Route, Routes, useLocation, useN
 import { BoasVindas } from '@/features/boas-vindas/BoasVindas';
 import { Cadastro } from '@/features/cadastro/Cadastro';
 import { NovaAvaliacao } from '@/features/avaliacao/NovaAvaliacao';
+import { Denuncia } from '@/features/denuncia/Denuncia';
 import { PerfilMedica } from '@/features/medica/PerfilMedica';
 import { MeuPerfil } from '@/features/perfil/MeuPerfil';
 import { Recomendacoes } from '@/features/recomendacoes/Recomendacoes';
@@ -25,6 +26,7 @@ export function App() {
             </Route>
             <Route path="/medica/:id" element={<Animada><PerfilMedica /></Animada>} />
             <Route path="/medica/:id/avaliar" element={<Animada><NovaAvaliacao /></Animada>} />
+            <Route path="/denunciar/:id?" element={<Animada><Denuncia /></Animada>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

@@ -199,6 +199,10 @@ export function PerfilMedica() {
             <Icone nome="editar" tamanho={18} />
             Avaliar minha consulta com Dra. {primeiroNome}
           </Link>
+          <Link to={`/denunciar/${m.id}`} className="btn btn-texto med-reportar">
+            <Icone nome="alerta" tamanho={18} />
+            Reportar um problema
+          </Link>
         </section>
         </div>
         </div>

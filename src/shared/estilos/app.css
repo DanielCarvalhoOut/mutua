@@ -564,6 +564,12 @@ textarea.entrada {
   min-height: 110px;
   resize: vertical;
 }
+.erro-campo {
+  color: var(--alerta);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  animation: aparece 200ms var(--ease);
+}
 .check {
   display: flex;
   align-items: flex-start;
@@ -611,6 +617,14 @@ textarea.entrada {
 }
 .acoes-fixas .btn {
   flex: 1;
+  min-width: 0;
+  padding: 0 12px;
+  line-height: 1.2;
+}
+@media (max-width: 400px) {
+  .acoes-fixas .btn {
+    font-size: 0.9375rem;
+  }
 }
 
 /* Navegação inferior */
@@ -720,6 +734,53 @@ textarea.entrada {
   place-items: center;
   padding: 48px 0;
   color: var(--text-secondary);
+}
+
+/* Controle segmentado (ex.: tema). */
+.segmentado {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+}
+.segmentado button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 42px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--t-rapida) var(--ease), color var(--t-rapida) var(--ease),
+    box-shadow var(--t-rapida) var(--ease), transform 120ms var(--ease);
+}
+.segmentado button:active {
+  transform: scale(0.96);
+}
+.segmentado button[aria-pressed='true'] {
+  background: var(--surface-card);
+  color: var(--brand-primary);
+  box-shadow: var(--shadow-card);
+}
+@media (max-width: 360px) {
+  .segmentado button svg {
+    display: none;
+  }
+}
+/* Troca de tema com esmaecimento (View Transitions), quando o navegador suporta. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+  animation-timing-function: var(--ease);
 }
 
 .logo-link {

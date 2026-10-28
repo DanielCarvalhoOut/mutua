@@ -42,6 +42,12 @@
   gap: 6px;
   color: var(--tag-experience);
 }
+.med-reportar {
+  align-self: center;
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
 .med-lista {
   display: flex;
   flex-direction: column;

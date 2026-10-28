@@ -1,11 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePerfil } from '@/app/perfil';
+import { useTema, type Tema } from '@/app/tema';
 import { ESPECIALIDADES, PREFERENCIAS, VIVENCIAS } from '@/domain/catalogo';
 import { priorizar } from '@/domain/prioridade';
 import type { TempoDesdeExame } from '@/domain/types';
 import { Logo, NivelPill } from '@/shared/ui/componentes';
-import { Icone } from '@/shared/ui/Icone';
+import { Icone, type NomeIcone } from '@/shared/ui/Icone';
+
+const TEMAS: { id: Tema; rotulo: string; icone: NomeIcone }[] = [
+  { id: 'sistema', rotulo: 'Automático', icone: 'auto' },
+  { id: 'claro', rotulo: 'Claro', icone: 'sol' },
+  { id: 'escuro', rotulo: 'Escuro', icone: 'lua' },
+];
 
 const tempo = (t: TempoDesdeExame) =>
   t === null ? 'Nunca fez' : t === 0 ? 'Há menos de 1 ano' : t >= 4 ? 'Há mais de 3 anos' : `Há ${t} a ${t + 1} anos`;
@@ -14,6 +21,7 @@ export function MeuPerfil() {
   const navegar = useNavigate();
   const { perfil, limpar } = usePerfil();
   const [confirmando, setConfirmando] = useState(false);
+  const [tema, escolherTema] = useTema();
 
   if (!perfil) {
     return (
@@ -79,6 +87,34 @@ export function MeuPerfil() {
           </div>
         </section>
       )}
+
+      <section className="secao">
+        <h2 className="rotulo">Segurança</h2>
+        <p className="aviso">
+          <Icone nome="escudo" tamanho={18} />
+          Passou por assédio, desrespeito ou negligência numa consulta? Você pode denunciar com sigilo. A médica nunca é
+          avisada.
+        </p>
+        <button type="button" className="btn btn-secundario" onClick={() => navegar('/denunciar')}>
+          <Icone nome="alerta" tamanho={18} />
+          Reportar um problema
+        </button>
+      </section>
+
+      <section className="secao">
+        <h2 className="rotulo" id="aparencia">Aparência</h2>
+        <div className="segmentado" role="group" aria-labelledby="aparencia">
+          {TEMAS.map((t) => (
+            <button key={t.id} type="button" aria-pressed={tema === t.id} onClick={() => escolherTema(t.id)}>
+              <Icone nome={t.icone} tamanho={18} />
+              {t.rotulo}
+            </button>
+          ))}
+        </div>
+        <span className="texto-sec">
+          {tema === 'sistema' ? 'Segue o tema claro ou escuro do seu aparelho.' : 'Vale para este aparelho.'}
+        </span>
+      </section>
 
       <section className="secao">
         <h2 className="rotulo">Seus dados</h2>
