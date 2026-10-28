@@ -1,0 +1,85 @@
+/* Design system Mútua. Paleta do guia de identidade com os ajustes de contraste:
+   text-secondary 72% (AA sobre o canvas), hover mais escuro que o primary,
+   cores semânticas separadas da marca e tema escuro. */
+:root {
+  --bg-canvas: #f9f4f7;
+  --bg-page: #efe4ea; /* em telas largas, ao redor da coluna do app */
+  --surface-card: #ffffff;
+  --surface-sunken: #f3eaef;
+  --line: rgba(74, 32, 59, 0.12);
+  --text-primary: #4a203b;
+  --text-secondary: rgba(74, 32, 59, 0.72);
+  --brand-primary: #a45279;
+  --brand-hover: #8a3f64;
+  --on-brand: #ffffff;
+  --tag-experience: #9852a4;
+  --badge-validation: #a4525e;
+  --match-accent: #a46252;
+  --ok: #2f7a57;
+  --atencao: #8c5a0a;
+  --alerta: #b0283f;
+  --neutro: #6f5a68;
+  --focus: #9852a4;
+
+  --font: 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(74, 32, 59, 0.06), 0 6px 20px rgba(74, 32, 59, 0.06);
+  --transicao: 150ms ease;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.625rem;
+  --fs-2xl: 2.125rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg-canvas: #1b1218;
+    --bg-page: #130c11;
+    --surface-card: #271a23;
+    --surface-sunken: #21161e;
+    --line: rgba(245, 232, 240, 0.12);
+    --text-primary: #f6e9f1;
+    --text-secondary: rgba(246, 233, 241, 0.72);
+    --brand-primary: #d683ab;
+    --brand-hover: #e7a3c3;
+    --on-brand: #2a0f1f;
+    --tag-experience: #cf95dc;
+    --badge-validation: #e0919d;
+    --match-accent: #e8a28f;
+    --ok: #6fcf9f;
+    --atencao: #e6b25a;
+    --alerta: #f08a9b;
+    --neutro: #c3adbb;
+    --focus: #cf95dc;
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg-canvas: #1b1218;
+  --bg-page: #130c11;
+  --surface-card: #271a23;
+  --surface-sunken: #21161e;
+  --line: rgba(245, 232, 240, 0.12);
+  --text-primary: #f6e9f1;
+  --text-secondary: rgba(246, 233, 241, 0.72);
+  --brand-primary: #d683ab;
+  --brand-hover: #e7a3c3;
+  --on-brand: #2a0f1f;
+  --tag-experience: #cf95dc;
+  --badge-validation: #e0919d;
+  --match-accent: #e8a28f;
+  --ok: #6fcf9f;
+  --atencao: #e6b25a;
+  --alerta: #f08a9b;
+  --neutro: #c3adbb;
+  --focus: #cf95dc;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.25);
+  color-scheme: dark;
+}
