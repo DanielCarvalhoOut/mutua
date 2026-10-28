@@ -72,6 +72,12 @@ Interfaces em `src/integrations/fontes.ts`:
 - Depois da denúncia, a médica sai das recomendações daquela paciente (`PerfilRepository.ocultarMedica`). A lista fica no aparelho e é apagada junto com os dados da paciente.
 - Nada do conteúdo vai para mensagens de erro ou console. O adaptador local guarda os registros só em memória.
 
+**Encaminhamento ao CRM:** toda denúncia segue, pela Mútua, para o Conselho Regional de Medicina do estado da médica (`encaminhamento.uf`). A paciente não precisa ir ao conselho.
+
+- Anônima: vai sem nenhum dado de identificação; o CRM pode apurar de ofício.
+- Identificada: os dados de contato só seguem com a autorização marcada na confirmação (`compartilharIdentificacao`). A tela avisa que, se o CRM abrir processo, a médica tem direito de defesa e pode conhecer a denúncia.
+- No servidor, `ConselhoMedicinaGateway` (em `src/integrations/fontes.ts`) envia depois da triagem. Os CRMs não têm API pública de denúncias, então o canal de cada estado é acertado em termo de cooperação. O protocolo do conselho, quando houver, fica ligado à denúncia e aparece no acompanhamento.
+
 **Contrato do backend (a implementar):**
 
 | Rota | Quem pode | Observação |

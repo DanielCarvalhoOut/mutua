@@ -31,7 +31,21 @@ export interface RascunhoDenuncia {
   tipo: TipoOcorrencia | '';
   motivo: string;
   anonima: boolean | null;
+  /** Autoriza enviar os dados de contato ao CRM junto com a denúncia (só vale se não for anônima). */
+  autorizaCrm: boolean;
 }
+
+/**
+ * Toda denúncia é encaminhada pela Mútua ao Conselho Regional de Medicina do estado da médica.
+ * A paciente não precisa ir ao CRM. A identificação dela só segue com autorização explícita (LGPD).
+ */
+export interface EncaminhamentoConselho {
+  orgao: 'CRM';
+  uf: string;
+  compartilharIdentificacao: boolean;
+}
+
+export const siglaConselho = (e: Pick<EncaminhamentoConselho, 'uf'>) => 'CRM-' + e.uf;
 
 /** O que sai do aparelho. Em denúncia anônima, `pacienteId` é sempre null. */
 export interface NovaDenuncia {
@@ -41,6 +55,7 @@ export interface NovaDenuncia {
   motivo: string;
   anonima: boolean;
   pacienteId: string | null;
+  encaminhamento: EncaminhamentoConselho;
 }
 
 /** Registro completo, como o servidor guarda. A paciente nunca recebe isso de volta. */
@@ -56,12 +71,14 @@ export interface Denuncia extends NovaDenuncia {
 export interface ComprovanteDenuncia {
   protocolo: string;
   criadoEm: string;
+  /** Sigla do conselho para onde a denúncia será encaminhada, ex.: CRM-GO. */
+  conselho: string;
 }
 
 export type ErrosDenuncia = Partial<Record<keyof RascunhoDenuncia, string>>;
 
 export function rascunhoVazio(medicaId = ''): RascunhoDenuncia {
-  return { medicaId, ocorridoEm: '', tipo: '', motivo: '', anonima: null };
+  return { medicaId, ocorridoEm: '', tipo: '', motivo: '', anonima: null, autorizaCrm: false };
 }
 
 export function validarDenuncia(r: RascunhoDenuncia, agora: Date = new Date()): ErrosDenuncia {
@@ -88,17 +105,24 @@ export const denunciaValida = (r: RascunhoDenuncia, agora?: Date) => Object.keys
  * Monta o que vai para o servidor. Se for anônima, o identificador da paciente é
  * descartado aqui mesmo: ele nunca sai do aparelho, em vez de só ficar escondido na tela.
  */
-export function montarDenuncia(r: RascunhoDenuncia, pacienteId: string | null): NovaDenuncia {
+export function montarDenuncia(r: RascunhoDenuncia, pacienteId: string | null, ufMedica: string): NovaDenuncia {
   if (!denunciaValida(r)) throw new Error('Denúncia incompleta.');
+  const anonima = r.anonima === true;
   return {
     medicaId: r.medicaId,
     ocorridoEm: new Date(r.ocorridoEm).toISOString(),
     tipo: r.tipo as TipoOcorrencia,
     motivo: r.motivo.trim(),
-    anonima: r.anonima === true,
-    pacienteId: r.anonima ? null : pacienteId,
+    anonima,
+    pacienteId: anonima ? null : pacienteId,
+    // O CRM só recebe a identificação de quem não é anônima e autorizou.
+    encaminhamento: { orgao: 'CRM', uf: ufMedica, compartilharIdentificacao: !anonima && r.autorizaCrm },
   };
 }
+
+/** Na confirmação, denúncia identificada exige autorizar o envio dos dados ao CRM. */
+export const podeConfirmar = (r: RascunhoDenuncia, declaroVerdade: boolean) =>
+  declaroVerdade && (r.anonima === true || r.autorizaCrm);
 
 // Sem 0/O e 1/I, para o protocolo ser ditado por telefone sem confusão.
 const ALFABETO = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

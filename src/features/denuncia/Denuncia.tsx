@@ -5,6 +5,8 @@ import { useServicos } from '@/app/servicos';
 import { ESPECIALIDADES, listar } from '@/domain/catalogo';
 import {
   agoraLocal,
+  podeConfirmar,
+  siglaConselho,
   montarDenuncia,
   MOTIVO_MAXIMO,
   MOTIVO_MINIMO,
@@ -50,6 +52,7 @@ export function Denuncia() {
   const erros = validarDenuncia(r);
   const valido = Object.keys(erros).length === 0;
   const medica = lista?.find((m) => m.id === r.medicaId);
+  const crm = medica ? siglaConselho(medica.registro) : 'CRM do estado';
   const motivoLen = r.motivo.trim().length;
 
   const mudar = (parcial: Partial<RascunhoDenuncia>) => {
@@ -74,7 +77,7 @@ export function Denuncia() {
     setEnviando(true);
     setErroEnvio(null);
     try {
-      const recibo = await denuncias.registrar(montarDenuncia(r, perfil.identificador()));
+      const recibo = await denuncias.registrar(montarDenuncia(r, perfil.identificador(), medica?.registro.uf ?? 'GO'));
       setComprovante(recibo);
       // A médica denunciada sai das recomendações desta paciente.
       ocultarMedica(r.medicaId);
@@ -110,7 +113,8 @@ export function Denuncia() {
                   <strong>Sua denúncia é sigilosa</strong>
                 </span>
                 <span className="texto-sec">
-                  A médica não é avisada e nunca tem acesso a ela. Só a equipe de análise da Mútua lê o que você escrever.
+                  Na Mútua, a médica não é avisada e nunca tem acesso a ela. Nós encaminhamos a denúncia ao Conselho
+                  Regional de Medicina ({crm}) para apuração: você não precisa ir até lá.
                 </span>
               </div>
 
@@ -197,8 +201,8 @@ export function Denuncia() {
                 {r.anonima !== null && (
                   <span className="texto-sec">
                     {r.anonima
-                      ? 'Seu nome e seus dados não ficam ligados à denúncia. Você acompanha pelo número de protocolo.'
-                      : 'A equipe de análise poderá falar com você se precisar de mais detalhes. A médica continua sem saber quem denunciou.'}
+                      ? `Seus dados não ficam ligados à denúncia e não vão para o ${crm}. Você acompanha pelo número de protocolo.`
+                      : `A equipe da Mútua e o ${crm} poderão falar com você se precisarem de mais detalhes.`}
                   </span>
                 )}
               </div>
@@ -214,6 +218,7 @@ export function Denuncia() {
                 <Item rotulo="Quando aconteceu" valor={formatarData(r.ocorridoEm)} />
                 <Item rotulo="Tipo de ocorrência" valor={r.tipo ? TIPOS_OCORRENCIA[r.tipo] : ''} />
                 <Item rotulo="Denúncia anônima" valor={r.anonima ? 'Sim' : 'Não'} />
+                <Item rotulo="Encaminhamento" valor={`${crm} (Conselho Regional de Medicina)`} />
                 <div className="den-item">
                   <dt>Motivo</dt>
                   <dd className="den-motivo-lido">{r.motivo.trim()}</dd>
@@ -229,6 +234,34 @@ export function Denuncia() {
                 <input id="den-declaro" type="checkbox" checked={declaro} onChange={(e) => setDeclaro(e.target.checked)} />
                 <span>Declaro que as informações fornecidas são verdadeiras.</span>
               </label>
+
+              {r.anonima ? (
+                <p className="aviso">
+                  <Icone nome="info" tamanho={18} />
+                  A denúncia vai ao {crm} sem seus dados. O conselho pode apurar por conta própria, mas não conseguirá
+                  falar com você.
+                </p>
+              ) : (
+                <>
+                  <label className="check">
+                    <input
+                      id="den-autoriza-crm"
+                      type="checkbox"
+                      checked={r.autorizaCrm}
+                      onChange={(e) => setR((atual) => ({ ...atual, autorizaCrm: e.target.checked }))}
+                    />
+                    <span>
+                      Autorizo a Mútua a enviar meus dados de contato ao {crm} junto com a denúncia, para que o conselho
+                      possa falar comigo.
+                    </span>
+                  </label>
+                  <p className="aviso">
+                    <Icone nome="info" tamanho={18} />
+                    Se o conselho abrir um processo, a médica tem direito de defesa e pode conhecer a denúncia, como em
+                    qualquer apuração do CRM. Se preferir não ser identificada, volte e marque a denúncia como anônima.
+                  </p>
+                </>
+              )}
 
               {erroEnvio && (
                 <p className="painel den-erro" role="alert">
@@ -257,6 +290,32 @@ export function Denuncia() {
                   <span>Em caso de dúvidas, entre em contato com o suporte.</span>
                 </span>
               </div>
+
+              <ol className="card den-etapas" aria-label="Próximos passos">
+                <li data-estado="feito">
+                  <span className="den-etapa-marca">
+                    <Icone nome="check" tamanho={14} />
+                  </span>
+                  <span>
+                    <strong>Registrada na Mútua</strong>
+                    <span className="texto-sec">Nossa equipe de análise já recebeu.</span>
+                  </span>
+                </li>
+                <li data-estado="proximo">
+                  <span className="den-etapa-marca" />
+                  <span>
+                    <strong>Encaminhada ao {comprovante.conselho}</strong>
+                    <span className="texto-sec">Nós enviamos ao conselho. Você não precisa ir até lá.</span>
+                  </span>
+                </li>
+                <li data-estado="depois">
+                  <span className="den-etapa-marca" />
+                  <span>
+                    <strong>Apuração pelo {comprovante.conselho}</strong>
+                    <span className="texto-sec">O conselho analisa o caso e decide se abre uma sindicância.</span>
+                  </span>
+                </li>
+              </ol>
 
               <div className="card den-protocolo">
                 <span className="rotulo">Número de protocolo</span>
@@ -289,7 +348,7 @@ export function Denuncia() {
             <button type="button" className="btn btn-secundario" onClick={() => irPara('formulario', 'voltar')}>
               Voltar e editar
             </button>
-            <button type="button" className="btn btn-primario" disabled={!declaro || enviando} onClick={confirmar}>
+            <button type="button" className="btn btn-primario" disabled={!podeConfirmar(r, declaro) || enviando} onClick={confirmar}>
               {enviando ? 'Enviando…' : 'Confirmar denúncia'}
             </button>
           </>
@@ -323,7 +382,6 @@ function ApoioImediato() {
         Em perigo, ligue <strong className="num">190</strong>. Para orientação sobre violência contra a mulher, ligue{' '}
         <strong className="num">180</strong>, gratuito e 24 horas.
       </span>
-      <span className="texto-sec">Você também pode denunciar ao Conselho Regional de Medicina (CRM) do seu estado.</span>
     </div>
   );
 }

@@ -90,6 +90,58 @@
   color: var(--text-secondary);
 }
 
+/* Próximos passos: linha do tempo do encaminhamento ao CRM. */
+.den-etapas {
+  list-style: none;
+  margin: 0;
+  gap: 0;
+}
+.den-etapas li {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+  font-size: var(--fs-sm);
+}
+.den-etapas li:last-child {
+  padding-bottom: 0;
+}
+.den-etapas li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 26px;
+  bottom: 2px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--line);
+}
+.den-etapas li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.den-etapa-marca {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: var(--surface-card);
+}
+.den-etapas li[data-estado='feito'] .den-etapa-marca {
+  border-color: var(--ok);
+  background: var(--ok);
+  color: var(--surface-card);
+}
+.den-etapas li[data-estado='proximo'] .den-etapa-marca {
+  border-color: var(--brand-primary);
+  box-shadow: inset 0 0 0 4px var(--surface-card), inset 0 0 0 12px var(--brand-primary);
+}
+
 /* Sucesso */
 .den-sucesso {
   display: flex;

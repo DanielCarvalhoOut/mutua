@@ -1,7 +1,7 @@
 // Adaptadores locais: dados fictícios em memória + avaliações novas salvas no navegador.
 // Implementam as mesmas portas que o backend vai implementar.
 
-import { gerarProtocolo, type ComprovanteDenuncia, type Denuncia, type NovaDenuncia } from '@/domain/denuncia';
+import { gerarProtocolo, siglaConselho, type ComprovanteDenuncia, type Denuncia, type NovaDenuncia } from '@/domain/denuncia';
 import type { AvaliacaoRepository, DenunciaRepository, MedicaRepository, PerfilRepository } from '@/domain/ports';
 import type { Avaliacao, CriterioId, EspecialidadeId, Medica, NovaAvaliacao, PerfilPaciente } from '@/domain/types';
 import { gravarJson, lerJson, remover } from '../storage';
@@ -94,6 +94,11 @@ export class LocalDenunciaRepository implements DenunciaRepository {
       ...nova,
       // Mesmo que um cliente mande o identificador, denúncia anônima não guarda quem enviou.
       pacienteId: nova.anonima ? null : nova.pacienteId,
+      // Anônima também não repassa identificação ao CRM.
+      encaminhamento: {
+        ...nova.encaminhamento,
+        compartilharIdentificacao: !nova.anonima && nova.encaminhamento.compartilharIdentificacao,
+      },
       id: `den-${agora.getTime().toString(36)}`,
       protocolo,
       status: 'ABERTA',
@@ -101,7 +106,7 @@ export class LocalDenunciaRepository implements DenunciaRepository {
       atualizadoEm: agora.toISOString(),
     };
     this.registros.push(registro);
-    return atraso({ protocolo, criadoEm: registro.criadoEm });
+    return atraso({ protocolo, criadoEm: registro.criadoEm, conselho: siglaConselho(nova.encaminhamento) });
   }
 }
 

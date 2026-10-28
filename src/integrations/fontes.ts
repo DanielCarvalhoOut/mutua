@@ -23,6 +23,25 @@ export interface FonteRedeAtendimento {
   >;
 }
 
+/**
+ * Encaminhamento de denúncias ao Conselho Regional de Medicina do estado da médica.
+ * Roda só no servidor, depois da triagem da equipe de análise da Mútua. Os CRMs não têm API
+ * pública de denúncias: o canal é definido em termo de cooperação com cada conselho
+ * (sistema da ouvidoria, e-mail institucional ou ofício). Sem autorização da paciente,
+ * nenhum dado de identificação é enviado.
+ */
+export interface ConselhoMedicinaGateway {
+  readonly uf: string;
+  encaminhar(denuncia: {
+    protocolo: string;
+    crmMedica: string;
+    tipo: string;
+    ocorridoEm: string;
+    relato: string;
+    denunciante: { nome: string; contato: string } | null;
+  }): Promise<{ protocoloConselho: string | null; enviadoEm: string }>;
+}
+
 export interface AgendaParceira {
   horariosLivres(medicaId: string, de: Date, ate: Date): Promise<Date[]>;
   /** Devolve o código que depois comprova a consulta na avaliação. */
