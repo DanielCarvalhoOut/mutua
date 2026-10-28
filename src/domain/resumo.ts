@@ -52,8 +52,8 @@ export function resumirPorRegras(medica: Medica, avaliacoes: Avaliacao[], perfil
 
   const af = perfil ? afinidade(avaliacoes, perfil.vivencias) : null;
   if (af) {
-    const nomes = lista(af.vivencias.map((v) => VIVENCIAS[v].toLowerCase()));
-    frases.push(`Entre mulheres com ${nomes}, a nota é ${af.media.toFixed(1).replace('.', ',')}.`);
+    const elogiadas = avaliacoes.filter((a) => a.nota >= 4 && a.autora.vivencias.some((v) => af.vivencias.includes(v)));
+    frases.push(`${elogiadas.length} de ${af.total} mulheres com vivências parecidas com as suas deram nota 4 ou 5.`);
   }
 
   const vivencias = medica.vivencias.map((v) => VIVENCIAS[v.id].toLowerCase());

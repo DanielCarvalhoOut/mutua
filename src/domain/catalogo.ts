@@ -1,7 +1,7 @@
 import type { CriterioId, EspecialidadeId, PreferenciaId, VivenciaId } from './types';
 
 export const VIVENCIAS: Record<VivenciaId, string> = {
-  climaterio: 'Climatério e menopausa',
+  climaterio: 'Climatério/menopausa',
   endometriose: 'Endometriose',
   sop: 'SOP',
   maternidade_atipica: 'Maternidade atípica',

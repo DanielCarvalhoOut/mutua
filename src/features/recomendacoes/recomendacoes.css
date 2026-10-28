@@ -1,0 +1,76 @@
+.rec-cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.rec-cabecalho h1 {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+}
+.rec-filtro {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-inline: -16px;
+  padding-inline: 16px;
+  scrollbar-width: none;
+}
+.rec-filtro .chip {
+  flex: none;
+}
+.rec-fallback strong {
+  font-size: var(--fs-sm);
+}
+.rec-prio-titulo {
+  font-size: var(--fs-md);
+  font-weight: 800;
+}
+.rec-ref {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  min-width: 0;
+}
+.rec-card-topo {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+.rec-card-id {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.rec-card-id h3 {
+  font-size: var(--fs-md);
+  font-weight: 800;
+}
+.rec-card-id .texto-sec {
+  font-size: var(--fs-xs);
+}
+.rec-destaque {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.rec-card-base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.rec-nota {
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: var(--fs-sm);
+  min-width: 0;
+}
+.rec-ver {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: var(--fs-sm);
+  flex: none;
+}

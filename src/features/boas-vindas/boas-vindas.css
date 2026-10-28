@@ -1,0 +1,71 @@
+.boas-vindas {
+  justify-content: space-between;
+  gap: 28px;
+  padding-block: 40px 8px;
+}
+.bv-marca {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+.bv-logo {
+  width: 150px;
+}
+.bv-nome {
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: -4px;
+  letter-spacing: -0.01em;
+}
+.bv-slogan {
+  font-size: var(--fs-xl);
+  font-weight: 800;
+  line-height: 1.2;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+.bv-pontos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.bv-intro {
+  font-size: var(--fs-md);
+  color: var(--text-secondary);
+  text-align: center;
+}
+.bv-pontos ul {
+  list-style: none;
+  margin: 0;
+  padding: 16px;
+  display: grid;
+  gap: 14px;
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+.bv-pontos li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.bv-pontos li svg {
+  flex: none;
+  color: var(--brand-primary);
+}
+.bv-acoes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.bv-legal {
+  text-align: center;
+  font-size: var(--fs-xs);
+  max-width: 34ch;
+}
