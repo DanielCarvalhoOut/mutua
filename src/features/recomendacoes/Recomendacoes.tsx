@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { usePerfil } from '@/app/perfil';
 import { useServicos } from '@/app/servicos';
@@ -66,8 +66,13 @@ export function Recomendacoes() {
   // O tour abre quando a tela é aberta pedindo por ele (perfil de exemplo, perfil novo ou "Rever o tour").
   const local = useLocation();
   const navegar = useNavigate();
-  const comTour = (local.state as { tour?: boolean } | null)?.tour === true;
-  const encerrarTour = useCallback(() => navegar(local.pathname, { replace: true, state: null }), [navegar, local.pathname]);
+  const [tourAtivo, setTourAtivo] = useState(() => (local.state as { tour?: boolean } | null)?.tour === true);
+  useEffect(() => {
+    // Tira o pedido do histórico: recarregar a página não reabre o tour.
+    if (tourAtivo) navegar(local.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const encerrarTour = useCallback(() => setTourAtivo(false), []);
 
   return (
     <main className="tela">
@@ -140,7 +145,7 @@ export function Recomendacoes() {
         )}
       </section>
       <p className="faixa-demo">Protótipo · médicas e avaliações fictícias</p>
-      {comTour && resultado && !carregando && <Tour passos={PASSOS_TOUR} aoTerminar={encerrarTour} />}
+      {tourAtivo && resultado && !carregando && <Tour passos={PASSOS_TOUR} aoTerminar={encerrarTour} />}
     </main>
   );
 }

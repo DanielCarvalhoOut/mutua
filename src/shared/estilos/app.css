@@ -800,6 +800,9 @@ textarea.entrada {
 .tour-balao[data-lado='acima']::before {
   bottom: -7px;
 }
+.tour-balao[data-lado='dentro']::before {
+  display: none;
+}
 .tour-balao strong {
   font-size: var(--fs-md);
   font-weight: 800;

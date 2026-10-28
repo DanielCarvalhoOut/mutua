@@ -27,6 +27,7 @@ export function Tour({ passos, aoTerminar }: { passos: PassoTour[]; aoTerminar: 
   }, [passos]);
   const [i, setI] = useState(0);
   const [ret, setRet] = useState<Retangulo | null>(null);
+  const [alturaBalao, setAlturaBalao] = useState(190);
   const balao = useRef<HTMLDivElement>(null);
   const passo = visiveis?.[i];
 
@@ -42,7 +43,9 @@ export function Tour({ passos, aoTerminar }: { passos: PassoTour[]; aoTerminar: 
     const el = passo && document.querySelector<HTMLElement>(`[data-tour="${passo.alvo}"]`);
     if (!el) return;
     const reduzir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    el.scrollIntoView({ block: 'center', behavior: reduzir ? 'auto' : 'smooth' });
+    // Alvo alto (mais da metade da tela) vai para o topo, sobrando espaço para o balão embaixo.
+    const alto = el.getBoundingClientRect().height > window.innerHeight * 0.45;
+    el.scrollIntoView({ block: alto ? 'start' : 'center', behavior: reduzir ? 'auto' : 'smooth' });
     medir();
     const t = setTimeout(medir, 380);
     return () => clearTimeout(t);
@@ -70,6 +73,12 @@ export function Tour({ passos, aoTerminar }: { passos: PassoTour[]; aoTerminar: 
     balao.current?.focus();
   }, [i]);
 
+  // Mede a altura real do balão para posicioná-lo sem cortar.
+  useLayoutEffect(() => {
+    const h = balao.current?.offsetHeight;
+    if (h && h !== alturaBalao) setAlturaBalao(h);
+  });
+
   useEffect(() => {
     if (visiveis && !visiveis.length) aoTerminar();
   }, [visiveis, aoTerminar]);
@@ -80,16 +89,23 @@ export function Tour({ passos, aoTerminar }: { passos: PassoTour[]; aoTerminar: 
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const largura = Math.min(LARGURA_BALAO, vw - 32);
-  // Balão abaixo do destaque quando ele está na metade de cima da tela; acima, caso contrário.
-  const abaixo = !ret || ret.top + ret.height / 2 < vh / 2;
   const centroX = ret ? ret.left + ret.width / 2 : vw / 2;
   const left = Math.max(16, Math.min(vw - largura - 16, centroX - largura / 2));
   const setaX = Math.max(20, Math.min(largura - 20, centroX - left));
-  const estiloBalao: React.CSSProperties = ret
-    ? abaixo
-      ? { top: Math.min(ret.top + ret.height + 14, vh - 200), left, width: largura }
-      : { bottom: Math.max(vh - ret.top + 14, 16), left, width: largura }
-    : { top: vh / 2 - 100, left, width: largura };
+  // Abaixo do destaque se couber; senão acima; se não couber em nenhum lado (alvo muito alto),
+  // o balão fica por cima do destaque, no pé da tela. Sempre inteiro dentro da tela.
+  const espaco = alturaBalao + 24;
+  let lado: 'abaixo' | 'acima' | 'dentro' = 'dentro';
+  let top = vh - alturaBalao - 88; // acima da barra de navegação
+  if (ret && vh - (ret.top + ret.height) >= espaco) {
+    lado = 'abaixo';
+    top = ret.top + ret.height + 14;
+  } else if (ret && ret.top >= espaco) {
+    lado = 'acima';
+    top = ret.top - alturaBalao - 14;
+  }
+  top = Math.max(16, Math.min(top, vh - alturaBalao - 16));
+  const estiloBalao: React.CSSProperties = { top, left, width: largura };
 
   return (
     <div className="tour" aria-live="polite">
@@ -99,7 +115,7 @@ export function Tour({ passos, aoTerminar }: { passos: PassoTour[]; aoTerminar: 
       <div
         ref={balao}
         className="tour-balao"
-        data-lado={abaixo ? 'abaixo' : 'acima'}
+        data-lado={lado}
         style={{ ...estiloBalao, ['--seta-x' as string]: `${setaX}px` }}
         role="dialog"
         aria-modal="true"
