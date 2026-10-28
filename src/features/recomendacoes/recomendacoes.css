@@ -44,6 +44,21 @@
 .rec-filtro .chip {
   flex: none;
 }
+.rec-busca {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.rec-busca svg {
+  position: absolute;
+  left: 14px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+.rec-busca .entrada {
+  padding-left: 42px;
+  border-radius: var(--radius-pill);
+}
 .rec-fallback strong {
   font-size: var(--fs-sm);
 }

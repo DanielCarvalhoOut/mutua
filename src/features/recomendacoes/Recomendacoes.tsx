@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { usePerfil } from '@/app/perfil';
 import { useServicos } from '@/app/servicos';
 import { ESPECIALIDADES, VIVENCIAS, listar } from '@/domain/catalogo';
-import { recomendar } from '@/domain/matching';
+import { buscarMedicas, recomendar } from '@/domain/matching';
 import { priorizar, type Prioridade } from '@/domain/prioridade';
 import type { EspecialidadeId, PerfilPaciente } from '@/domain/types';
 import { Carregando, ChipOpcao, Logo, NivelPill, useCarregar } from '@/shared/ui/componentes';
@@ -22,6 +22,11 @@ const PASSOS_TOUR: PassoTour[] = [
     alvo: 'filtro',
     titulo: 'Filtre por especialidade',
     texto: 'Toque em uma ou mais especialidades e o ranking é recalculado na hora. "Todas" limpa o filtro.',
+  },
+  {
+    alvo: 'busca',
+    titulo: 'Procure qualquer médica',
+    texto: 'Não achou quem queria? Busque pelo nome, especialidade, bairro ou vivência, mesmo fora das recomendações.',
   },
   {
     alvo: 'card',
@@ -51,6 +56,20 @@ export function Recomendacoes() {
   const { dados: lista, carregando } = useCarregar(() => medicas.listar(), [medicas]);
 
   const resultado = useMemo(() => (lista ? recomendar(perfil, lista, 5, ocultas) : null), [lista, perfil, ocultas]);
+
+  // Busca para ir além do top 5: qualquer médica, por nome, especialidade, bairro ou vivência.
+  const [termo, setTermo] = useState('');
+  const [verTodas, setVerTodas] = useState(false);
+  const buscando = verTodas || termo.trim().length > 0;
+  const encontradas = useMemo(
+    () => (lista && buscando ? buscarMedicas(perfil, lista, termo, ocultas) : []),
+    [lista, perfil, termo, ocultas, buscando],
+  );
+  const noTop = useMemo(() => new Set(resultado?.recomendacoes.map((r) => r.medica.id)), [resultado]);
+  const limparBusca = () => {
+    setTermo('');
+    setVerTodas(false);
+  };
   const prioridades = useMemo(() => priorizar(perfil).filter((p) => p.nivel !== 'em_dia'), [perfil]);
 
   // Filtro de múltipla escolha: cada toque liga ou desliga uma especialidade; "Todas" limpa.
@@ -115,11 +134,58 @@ export function Recomendacoes() {
           ))}
         </div>
 
+        <div className="rec-busca" data-tour="busca">
+          <Icone nome="lupa" tamanho={18} />
+          <input
+            id="busca-medica"
+            type="search"
+            className="entrada"
+            placeholder="Procurar médica por nome, especialidade ou bairro"
+            aria-label="Procurar médica"
+            value={termo}
+            onChange={(e) => setTermo(e.target.value)}
+            enterKeyHint="search"
+            autoComplete="off"
+          />
+        </div>
+
         <h2 className="rotulo" id="ranking">
-          {resultado ? `Top ${resultado.recomendacoes.length} de ${resultado.totalAvaliadas} médicas verificadas` : 'Recomendações'}
+          {buscando
+            ? termo.trim()
+              ? `${encontradas.length} ${encontradas.length === 1 ? 'médica encontrada' : 'médicas encontradas'}`
+              : `Todas as ${encontradas.length} médicas, da maior afinidade à menor`
+            : resultado
+              ? `Top ${resultado.recomendacoes.length} de ${resultado.totalAvaliadas} médicas verificadas`
+              : 'Recomendações'}
         </h2>
 
-        {carregando || !resultado ? (
+        {buscando && !carregando ? (
+          <>
+            {termo.trim() && perfil.especialidades.length > 0 && (
+              <span className="texto-sec">A busca procura em todas as especialidades.</span>
+            )}
+            {encontradas.length ? (
+              <div className="rec-grade" key={`busca-${termo}`}>
+                {encontradas.map((r, i) => (
+                  <CardRecomendacao
+                    key={r.medica.id}
+                    recomendacao={r}
+                    posicao={i + 1}
+                    rotulo={noTop.has(r.medica.id) ? 'No seu top 5' : 'Fora das recomendações'}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="painel">
+                <strong>Nenhuma médica encontrada para “{termo.trim()}”.</strong>
+                <span className="texto-sec">Tente outro nome, uma especialidade ou um bairro.</span>
+              </div>
+            )}
+            <button type="button" className="btn btn-secundario" onClick={limparBusca}>
+              Voltar às recomendações
+            </button>
+          </>
+        ) : carregando || !resultado ? (
           <Carregando texto="Calculando afinidade…" />
         ) : (
           <>
@@ -137,6 +203,9 @@ export function Recomendacoes() {
                 <CardRecomendacao key={r.medica.id} recomendacao={r} posicao={i + 1} />
               ))}
             </div>
+            <button type="button" className="btn btn-secundario" onClick={() => setVerTodas(true)}>
+              Ver todas as médicas
+            </button>
             <p className="aviso">
               <Icone nome="info" tamanho={18} />
               Qualificação e avaliações pesam mais que a vivência no cálculo. A vivência aproxima e desempata.

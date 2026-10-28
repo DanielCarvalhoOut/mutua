@@ -4,7 +4,16 @@ import { itensDeCorrespondencia, type Recomendacao } from '@/domain/matching';
 import { AnelMatch, Avatar, decimal, pct, SeloVerificado } from '@/shared/ui/componentes';
 import { Estrela, Icone } from '@/shared/ui/Icone';
 
-export function CardRecomendacao({ recomendacao: r, posicao }: { recomendacao: Recomendacao; posicao: number }) {
+export function CardRecomendacao({
+  recomendacao: r,
+  posicao,
+  rotulo,
+}: {
+  recomendacao: Recomendacao;
+  posicao: number;
+  /** Na busca, troca "1ª opção" por "No seu top 5" ou "Fora das recomendações". */
+  rotulo?: string;
+}) {
   const m = r.medica;
   const itens = itensDeCorrespondencia(r);
   const temVivenciaPedida = r.vivenciasEmComum.length + r.vivenciasFaltando.length > 0;
@@ -13,12 +22,12 @@ export function CardRecomendacao({ recomendacao: r, posicao }: { recomendacao: R
     <article
       className="card rec-card entra"
       style={{ ['--i' as string]: posicao - 1 }}
-      data-tour={posicao === 1 ? 'card' : undefined}
+      data-tour={posicao === 1 && !rotulo ? 'card' : undefined}
     >
       <div className="rec-card-topo">
         <Avatar nome={m.nome} foto={m.foto} tamanho={52} />
         <div className="rec-card-id">
-          <span className="rotulo">{posicao}ª opção</span>
+          <span className="rotulo">{rotulo ?? `${posicao}ª opção`}</span>
           <h3>Dra. {m.nome}</h3>
           <span className="texto-sec">
             {m.especialidades.map((e) => ESPECIALIDADES[e]).join(' e ')} · {m.bairro}
@@ -32,7 +41,7 @@ export function CardRecomendacao({ recomendacao: r, posicao }: { recomendacao: R
         <ul
           className="correspondencia"
           aria-label="O que ela tem do que você pediu"
-          data-tour={posicao === 1 ? 'correspondencia' : undefined}
+          data-tour={posicao === 1 && !rotulo ? 'correspondencia' : undefined}
         >
           {itens.slice(0, 5).map((item) => (
             <li key={item.rotulo} className={item.tem ? 'tem' : 'nao'}>
@@ -66,7 +75,7 @@ export function CardRecomendacao({ recomendacao: r, posicao }: { recomendacao: R
         <Link
           to={`/medica/${m.id}`}
           className="btn btn-secundario rec-ver"
-          data-tour={posicao === 1 ? 'ver-perfil' : undefined}
+          data-tour={posicao === 1 && !rotulo ? 'ver-perfil' : undefined}
         >
           Ver perfil
         </Link>

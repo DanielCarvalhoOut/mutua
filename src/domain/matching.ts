@@ -3,7 +3,7 @@
 // Princípio do produto: vivência não substitui competência. O peso maior fica com a
 // qualificação e com as avaliações; a vivência em comum aproxima e desempata.
 
-import { PREFERENCIAS, VIVENCIAS } from './catalogo';
+import { ESPECIALIDADES, PREFERENCIAS, VIVENCIAS } from './catalogo';
 import type { Medica, PerfilPaciente, PreferenciaId, VivenciaId } from './types';
 
 export const PESOS = {
@@ -132,6 +132,44 @@ export function recomendar(
     algumaCompleta: ranking.some((r) => r.correspondenciaCompleta),
     totalAvaliadas: elegiveis.length,
   };
+}
+
+/** Minúsculas e sem acento: "ginecologia" encontra "Ginecologia", "jardim goias" encontra "Jardim Goiás". */
+export const normalizar = (t: string) =>
+  t
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+/**
+ * Busca livre entre todas as médicas, para ir além do top 5: por nome, especialidade,
+ * bairro, cidade ou vivência. Ignora o filtro de especialidade e o limite do ranking, mas
+ * mantém a % de afinidade de cada uma. Termo vazio devolve todas, da maior afinidade à menor.
+ */
+export function buscarMedicas(
+  perfil: PerfilPaciente,
+  medicas: Medica[],
+  termo: string,
+  ocultas: string[] = [],
+): Recomendacao[] {
+  const palavras = normalizar(termo).split(/\s+/).filter(Boolean);
+  return medicas
+    .filter((m) => m.registro.crmVerificado && !ocultas.includes(m.id))
+    .filter((m) => {
+      const texto = normalizar(
+        [
+          m.nome,
+          m.bairro,
+          m.cidade,
+          ...m.especialidades.map((e) => ESPECIALIDADES[e]),
+          ...m.vivencias.map((v) => VIVENCIAS[v.id]),
+        ].join(' '),
+      );
+      return palavras.every((p) => texto.includes(p));
+    })
+    .map((m) => avaliarMedica(perfil, m))
+    .sort((a, b) => b.score - a.score || b.medica.avaliacoes.total - a.medica.avaliacoes.total);
 }
 
 /** Itens "tem / não tem" na ordem em que a tela mostra. */

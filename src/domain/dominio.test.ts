@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MEDICAS, AVALIACOES } from '@/adapters/mock/seed';
-import { avaliarMedica, notaAjustada, recomendar } from './matching';
+import { avaliarMedica, buscarMedicas, notaAjustada, recomendar } from './matching';
 import { priorizar, priorizarMamografia, priorizarPreventivo } from './prioridade';
 import { afinidade } from './resumo';
 import type { PerfilPaciente } from './types';
@@ -71,6 +71,35 @@ describe('recomendação', () => {
 
   it('nota ajustada puxa poucas avaliações para a média', () => {
     expect(notaAjustada(5, 1)).toBeLessThan(notaAjustada(5, 200));
+  });
+});
+
+describe('busca de médicas', () => {
+  it('encontra pelo nome, sem acento e sem diferenciar maiúsculas', () => {
+    expect(buscarMedicas(perfil(), MEDICAS, 'silvia').map((r) => r.medica.id)).toEqual(['silvia-rocha']);
+  });
+
+  it('encontra por especialidade, bairro ou vivência, combinando palavras', () => {
+    const res = buscarMedicas(perfil(), MEDICAS, 'mastologia marista');
+    expect(res.map((r) => r.medica.id)).toEqual(['claudia-sena']);
+    expect(buscarMedicas(perfil(), MEDICAS, 'endometriose').length).toBeGreaterThan(0);
+  });
+
+  it('vai além do top 5 e ignora o filtro de especialidade', () => {
+    const p = perfil({ especialidades: ['mastologia'] });
+    expect(buscarMedicas(p, MEDICAS, '')).toHaveLength(MEDICAS.length);
+    expect(buscarMedicas(p, MEDICAS, 'camila')[0].medica.especialidades).toContain('ginecologia');
+  });
+
+  it('mantém a afinidade e não mostra médicas ocultadas', () => {
+    const res = buscarMedicas(perfil(), MEDICAS, '', ['helena-duarte']);
+    expect(res.some((r) => r.medica.id === 'helena-duarte')).toBe(false);
+    const scores = res.map((r) => r.score);
+    expect([...scores].sort((a, b) => b - a)).toEqual(scores);
+  });
+
+  it('sem resultado devolve lista vazia', () => {
+    expect(buscarMedicas(perfil(), MEDICAS, 'xyz inexistente')).toEqual([]);
   });
 });
 
