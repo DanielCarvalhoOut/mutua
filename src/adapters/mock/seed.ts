@@ -5,7 +5,7 @@ import type { Avaliacao, Medica } from '@/domain/types';
 const CONSENTIMENTO = '2026-09-15T10:00:00-03:00';
 const viv = (...ids: Medica['vivencias'][number]['id'][]) => ids.map((id) => ({ id, consentimentoEm: CONSENTIMENTO }));
 
-export const MEDICAS: Medica[] = [
+const BASE: Medica[] = [
   {
     id: 'helena-duarte',
     nome: 'Helena Marques Duarte',
@@ -203,6 +203,9 @@ export const MEDICAS: Medica[] = [
     avaliacoes: { total: 133, media: 4.7, criterios: { respeito: 0.93, explicou: 0.91, consentimento: 0.92, acompanhante: 0.94 } },
   },
 ];
+
+/** Retratos ilustrados gerados por `npm run retratos` (public/medicas). */
+export const MEDICAS: Medica[] = BASE.map((m) => ({ ...m, foto: `./medicas/${m.id}.svg` }));
 
 type Semente = Omit<Avaliacao, 'id' | 'consultaVerificada'> & { consultaVerificada?: boolean };
 

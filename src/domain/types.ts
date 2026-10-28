@@ -46,6 +46,8 @@ export interface ResumoAvaliacoes {
 export interface Medica {
   id: string;
   nome: string;
+  /** URL da foto enviada pela própria médica. Sem foto, a interface mostra as iniciais. */
+  foto?: string;
   especialidades: EspecialidadeId[];
   registro: RegistroProfissional;
   formacao: string;
@@ -80,6 +82,7 @@ export interface PerfilPaciente {
   preventivoHaAnos: TempoDesdeExame;
   historicoFamiliarMama: boolean;
   vivencias: VivenciaId[];
-  especialidade: EspecialidadeId | 'qualquer';
+  /** Especialidades procuradas. Lista vazia = todas. */
+  especialidades: EspecialidadeId[];
   preferencias: PreferenciaId[];
 }

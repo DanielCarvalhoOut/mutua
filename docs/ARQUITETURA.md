@@ -69,6 +69,7 @@ Interfaces em `src/integrations/fontes.ts`:
 - Anônima: `montarDenuncia` descarta o identificador da paciente antes do envio; ele não sai do aparelho.
 - A resposta é só o comprovante (`protocolo`, `criadoEm`). O app não tem como listar nem consultar denúncias.
 - Reenvio idêntico em até 2 minutos é bloqueado.
+- Depois da denúncia, a médica sai das recomendações daquela paciente (`PerfilRepository.ocultarMedica`). A lista fica no aparelho e é apagada junto com os dados da paciente.
 - Nada do conteúdo vai para mensagens de erro ou console. O adaptador local guarda os registros só em memória.
 
 **Contrato do backend (a implementar):**

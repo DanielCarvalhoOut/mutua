@@ -77,6 +77,46 @@
   align-items: center;
   gap: 8px;
 }
+.bv-opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bv-opcao {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-card);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color var(--t-rapida) var(--ease), background var(--t-rapida) var(--ease),
+    transform 120ms var(--ease);
+}
+.bv-opcao:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) {
+  .bv-opcao:hover {
+    border-color: var(--brand-primary);
+    background: color-mix(in srgb, var(--brand-primary) 5%, var(--surface-card));
+  }
+}
+.bv-opcao > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--brand-primary);
+}
+.bv-opcao > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
 .bv-legal {
   text-align: center;
   font-size: var(--fs-xs);

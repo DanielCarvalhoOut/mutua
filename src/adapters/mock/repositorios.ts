@@ -3,12 +3,13 @@
 
 import { gerarProtocolo, type ComprovanteDenuncia, type Denuncia, type NovaDenuncia } from '@/domain/denuncia';
 import type { AvaliacaoRepository, DenunciaRepository, MedicaRepository, PerfilRepository } from '@/domain/ports';
-import type { Avaliacao, CriterioId, Medica, NovaAvaliacao, PerfilPaciente } from '@/domain/types';
+import type { Avaliacao, CriterioId, EspecialidadeId, Medica, NovaAvaliacao, PerfilPaciente } from '@/domain/types';
 import { gravarJson, lerJson, remover } from '../storage';
 import { AVALIACOES, MEDICAS } from './seed';
 
 const CHAVE_AVALIACOES = 'mutua:avaliacoes:v1';
 const CHAVE_PERFIL = 'mutua:perfil:v1';
+const CHAVE_OCULTAS = 'mutua:medicas-ocultas:v1';
 
 const atraso = <T,>(valor: T) => new Promise<T>((ok) => setTimeout(() => ok(valor), 120));
 
@@ -117,12 +118,27 @@ export class LocalPerfilRepository implements PerfilRepository {
   }
 
   carregar(): PerfilPaciente | null {
-    return lerJson<PerfilPaciente | null>(CHAVE_PERFIL, null);
+    const salvo = lerJson<(PerfilPaciente & { especialidade?: string }) | null>(CHAVE_PERFIL, null);
+    if (!salvo) return null;
+    // Perfis antigos tinham uma única `especialidade` ('qualquer' = todas).
+    if (!Array.isArray(salvo.especialidades)) {
+      const { especialidade, ...resto } = salvo;
+      return { ...resto, especialidades: especialidade && especialidade !== 'qualquer' ? [especialidade as EspecialidadeId] : [] };
+    }
+    return salvo;
   }
   salvar(perfil: PerfilPaciente): void {
     gravarJson(CHAVE_PERFIL, perfil);
   }
+  medicasOcultas(): string[] {
+    return lerJson<string[]>(CHAVE_OCULTAS, []);
+  }
+  ocultarMedica(id: string): void {
+    const atuais = this.medicasOcultas();
+    if (!atuais.includes(id)) gravarJson(CHAVE_OCULTAS, [...atuais, id]);
+  }
   limpar(): void {
     remover(CHAVE_PERFIL);
+    remover(CHAVE_OCULTAS);
   }
 }

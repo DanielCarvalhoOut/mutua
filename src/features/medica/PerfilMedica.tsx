@@ -78,7 +78,7 @@ export function PerfilMedica() {
         <div className="med-grade">
         <div className="med-col">
         <section className="med-hero">
-          <Avatar nome={m.nome} tamanho={76} />
+          <Avatar nome={m.nome} foto={m.foto} tamanho={76} />
           <div className="med-hero-id">
             <h1>Dra. {m.nome}</h1>
             <span className="texto-sec">

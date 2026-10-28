@@ -56,8 +56,8 @@ export function MeuPerfil() {
         <Linha rotulo="Último preventivo" valor={tempo(perfil.preventivoHaAnos)} />
         <Linha rotulo="Câncer de mama na família" valor={perfil.historicoFamiliarMama ? 'Sim' : 'Não'} />
         <Linha
-          rotulo="Especialidade"
-          valor={perfil.especialidade === 'qualquer' ? 'Todas' : ESPECIALIDADES[perfil.especialidade]}
+          rotulo="Especialidades"
+          valor={perfil.especialidades.length ? perfil.especialidades.map((e) => ESPECIALIDADES[e]).join(', ') : 'Todas'}
         />
         <Linha
           rotulo="Atendimento"
@@ -97,13 +97,23 @@ export function MeuPerfil() {
           Passou por assédio, desrespeito ou negligência numa consulta? Você pode denunciar com sigilo. A médica nunca é
           avisada.
         </p>
-        <button type="button" className="btn btn-secundario" onClick={() => navegar('/denunciar')}>
+        <button type="button" className="btn btn-secundario btn-critico" onClick={() => navegar('/denunciar')}>
           <Icone nome="alerta" tamanho={18} />
           Reportar um problema
         </button>
       </section>
 
       <SeletorTema />
+
+      <button
+        type="button"
+        className="btn btn-texto"
+        style={{ alignSelf: 'flex-start' }}
+        onClick={() => navegar('/recomendacoes', { state: { tour: true } })}
+      >
+        <Icone nome="info" tamanho={18} />
+        Rever o tour guiado
+      </button>
 
       <section className="secao">
         <h2 className="rotulo">Seus dados</h2>

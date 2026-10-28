@@ -34,6 +34,9 @@ export interface PerfilRepository {
   identificador(): string;
   carregar(): PerfilPaciente | null;
   salvar(perfil: PerfilPaciente): void;
+  /** Médicas que a paciente não quer mais ver nas recomendações (ex.: após uma denúncia). */
+  medicasOcultas(): string[];
+  ocultarMedica(id: string): void;
   limpar(): void;
 }
 

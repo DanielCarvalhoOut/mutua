@@ -235,6 +235,13 @@ a {
   color: var(--brand-primary);
   box-shadow: inset 0 0 0 1.5px var(--brand-primary);
 }
+/* Ação crítica (ex.: reportar um problema): vermelho de alerta, separado da cor da marca. */
+.btn-critico {
+  color: var(--alerta);
+}
+.btn-secundario.btn-critico {
+  box-shadow: inset 0 0 0 1.5px var(--alerta);
+}
 /* Hover só em quem tem mouse: no toque, o estado "preso" confunde. */
 @media (hover: hover) {
   .btn-primario:hover:not([disabled]) {
@@ -245,6 +252,10 @@ a {
   }
   .btn-icone:hover {
     background: var(--surface-sunken);
+  }
+  .btn-secundario.btn-critico:hover:not([disabled]),
+  .btn-texto.btn-critico:hover {
+    background: color-mix(in srgb, var(--alerta) 8%, var(--surface-card));
   }
   .chip-opcao:hover {
     border-color: var(--brand-primary);
@@ -441,6 +452,12 @@ a {
   color: #ffffff;
   font-weight: 800;
   background: linear-gradient(135deg, #a8559a, #b46258);
+}
+
+.avatar-foto {
+  object-fit: cover;
+  background: var(--surface-sunken);
+  box-shadow: 0 0 0 2px var(--surface-card), 0 0 0 3px color-mix(in srgb, var(--brand-primary) 30%, transparent);
 }
 
 /* Barras */
@@ -734,6 +751,83 @@ textarea.entrada {
   place-items: center;
   padding: 48px 0;
   color: var(--text-secondary);
+}
+
+/* Tour guiado: o destaque escurece tudo em volta com uma sombra enorme. */
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.tour-bloqueio {
+  position: absolute;
+  inset: 0;
+}
+.tour-destaque {
+  position: fixed;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 0 0 9999px rgba(30, 10, 22, 0.6), 0 0 0 3px var(--brand-primary);
+  pointer-events: none;
+  transition: top 320ms var(--ease), left 320ms var(--ease), width 320ms var(--ease), height 320ms var(--ease);
+}
+.tour-balao {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--surface-card);
+  color: var(--text-primary);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+  animation: sobe 260ms var(--ease);
+  outline: none;
+}
+/* Setinha apontando para o elemento destacado. */
+.tour-balao::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--seta-x) - 8px);
+  width: 16px;
+  height: 16px;
+  background: inherit;
+  transform: rotate(45deg);
+  border-radius: 3px;
+}
+.tour-balao[data-lado='abaixo']::before {
+  top: -7px;
+}
+.tour-balao[data-lado='acima']::before {
+  bottom: -7px;
+}
+.tour-balao strong {
+  font-size: var(--fs-md);
+  font-weight: 800;
+}
+.tour-balao p {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+.tour-contador {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  color: var(--brand-primary);
+  letter-spacing: 0.04em;
+}
+.tour-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.tour-acoes .btn-texto {
+  padding: 0 4px;
+  color: var(--text-secondary);
+}
+.tour-btn {
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: var(--fs-sm);
 }
 
 /* Controle segmentado (ex.: tema). */

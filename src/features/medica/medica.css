@@ -44,7 +44,7 @@
 }
 .med-reportar {
   align-self: center;
-  color: var(--text-secondary);
+  color: var(--alerta);
   font-weight: 700;
   font-size: var(--fs-sm);
 }

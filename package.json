@@ -9,7 +9,8 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "retratos": "vite-node scripts/gerar-retratos.ts"
   },
   "dependencies": {
     "react": "18.3.1",
@@ -17,6 +18,8 @@
     "react-router-dom": "6.28.0"
   },
   "devDependencies": {
+    "@dicebear/core": "9.4.2",
+    "@dicebear/lorelei": "9.4.2",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
     "@vitejs/plugin-react": "4.3.4",

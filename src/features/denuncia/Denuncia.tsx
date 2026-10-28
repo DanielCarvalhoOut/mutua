@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { usePerfil } from '@/app/perfil';
 import { useServicos } from '@/app/servicos';
 import { ESPECIALIDADES, listar } from '@/domain/catalogo';
 import {
@@ -32,6 +33,7 @@ export function Denuncia() {
   const { id } = useParams();
   const navegar = useNavigate();
   const { medicas, denuncias, perfil } = useServicos();
+  const { ocultarMedica } = usePerfil();
   const { dados: lista } = useCarregar(() => medicas.listar(), [medicas]);
 
   const [r, setR] = useState<RascunhoDenuncia>(() => rascunhoVazio(id ?? ''));
@@ -74,6 +76,8 @@ export function Denuncia() {
     try {
       const recibo = await denuncias.registrar(montarDenuncia(r, perfil.identificador()));
       setComprovante(recibo);
+      // A médica denunciada sai das recomendações desta paciente.
+      ocultarMedica(r.medicaId);
       irPara('sucesso', 'avancar');
     } catch (e) {
       setErroEnvio(e instanceof Error ? e.message : 'Não conseguimos registrar a denúncia agora. Tente de novo.');
@@ -242,6 +246,16 @@ export function Denuncia() {
                 </span>
                 <h1>Recebemos sua denúncia</h1>
                 <p className="texto-sec">Sua denúncia foi registrada com sucesso e será analisada com sigilo.</p>
+              </div>
+
+              <div className="den-balao" role="status">
+                <Icone nome="info" tamanho={20} />
+                <span>
+                  <strong>
+                    {medica ? `Dra. ${medica.nome}` : 'Essa profissional'} não vai mais aparecer nas suas recomendações.
+                  </strong>
+                  <span>Em caso de dúvidas, entre em contato com o suporte.</span>
+                </span>
               </div>
 
               <div className="card den-protocolo">

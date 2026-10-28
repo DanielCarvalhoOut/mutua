@@ -113,11 +113,14 @@ export function recomendar(
   perfil: PerfilPaciente,
   medicas: Medica[],
   limite = 5,
+  /** Médicas que a paciente pediu para não ver mais (ex.: depois de uma denúncia). */
+  ocultas: string[] = [],
 ): ResultadoRecomendacao {
   const elegiveis = medicas.filter(
     (m) =>
       m.registro.crmVerificado &&
-      (perfil.especialidade === 'qualquer' || m.especialidades.includes(perfil.especialidade)),
+      !ocultas.includes(m.id) &&
+      (perfil.especialidades.length === 0 || m.especialidades.some((e) => perfil.especialidades.includes(e))),
   );
   const ranking = elegiveis
     .map((m) => avaliarMedica(perfil, m))

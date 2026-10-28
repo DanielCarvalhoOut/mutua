@@ -44,7 +44,7 @@ function ComNavegacao() {
           <Icone nome="inicio" />
           Minhas médicas
         </NavLink>
-        <NavLink to="/perfil">
+        <NavLink to="/perfil" data-tour="nav-perfil">
           <Icone nome="pessoa" />
           Meu perfil
         </NavLink>

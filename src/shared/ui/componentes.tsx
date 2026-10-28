@@ -18,9 +18,24 @@ export function Logo({ tamanho = 36, comNome = true }: { tamanho?: number; comNo
   );
 }
 
-export function Avatar({ nome, tamanho = 48 }: { nome: string; tamanho?: number }) {
+export function Avatar({ nome, foto, tamanho = 48 }: { nome: string; foto?: string; tamanho?: number }) {
+  const [falhou, setFalhou] = useState(false);
   const partes = nome.split(' ');
   const iniciais = (partes[0][0] + (partes[partes.length - 1][0] ?? '')).toUpperCase();
+  if (foto && !falhou) {
+    return (
+      <img
+        className="avatar avatar-foto"
+        src={foto}
+        alt=""
+        width={tamanho}
+        height={tamanho}
+        style={{ width: tamanho, height: tamanho }}
+        loading="lazy"
+        onError={() => setFalhou(true)}
+      />
+    );
+  }
   return (
     <span className="avatar" style={{ width: tamanho, height: tamanho, fontSize: tamanho * 0.36 }} aria-hidden>
       {iniciais}

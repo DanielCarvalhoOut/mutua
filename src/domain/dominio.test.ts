@@ -11,7 +11,7 @@ const perfil = (p: Partial<PerfilPaciente> = {}): PerfilPaciente => ({
   preventivoHaAnos: 1,
   historicoFamiliarMama: false,
   vivencias: [],
-  especialidade: 'qualquer',
+  especialidades: [],
   preferencias: [],
   ...p,
 });
@@ -25,12 +25,20 @@ describe('recomendação', () => {
   });
 
   it('respeita a especialidade pedida', () => {
-    const { recomendacoes } = recomendar(perfil({ especialidade: 'mastologia' }), MEDICAS);
+    const { recomendacoes } = recomendar(perfil({ especialidades: ['mastologia'] }), MEDICAS);
     expect(recomendacoes.every((r) => r.medica.especialidades.includes('mastologia'))).toBe(true);
   });
 
+  it('aceita mais de uma especialidade ao mesmo tempo', () => {
+    const pedidas = ['mastologia', 'endocrinologia'] as const;
+    const { recomendacoes, totalAvaliadas } = recomendar(perfil({ especialidades: [...pedidas] }), MEDICAS);
+    expect(totalAvaliadas).toBe(MEDICAS.filter((m) => m.especialidades.some((e) => pedidas.includes(e as never))).length);
+    expect(recomendacoes.every((r) => r.medica.especialidades.some((e) => pedidas.includes(e as never)))).toBe(true);
+    expect(new Set(recomendacoes.flatMap((r) => r.medica.especialidades)).size).toBeGreaterThan(1);
+  });
+
   it('vivência não substitui competência: experiência e avaliações pesam mais', () => {
-    const p = perfil({ vivencias: ['endometriose'], especialidade: 'ginecologia' });
+    const p = perfil({ vivencias: ['endometriose'], especialidades: ['ginecologia'] });
     const residente = avaliarMedica(p, MEDICAS.find((m) => m.id === 'fernanda-vilela')!);
     const especialista = avaliarMedica(p, MEDICAS.find((m) => m.id === 'camila-prado')!);
     // As duas compartilham a vivência; a mais qualificada e bem avaliada fica na frente.
@@ -51,6 +59,14 @@ describe('recomendação', () => {
     expect(r.vivenciasFaltando).toEqual(['sop']);
     expect(r.preferenciasAtendidas).toEqual(['teleconsulta']);
     expect(r.preferenciasFaltando).toEqual(['sus']);
+  });
+
+  it('médica ocultada pela paciente não aparece mais', () => {
+    const p = perfil({ vivencias: ['climaterio'] });
+    const primeira = recomendar(p, MEDICAS).recomendacoes[0].medica.id;
+    const depois = recomendar(p, MEDICAS, 5, [primeira]);
+    expect(depois.recomendacoes.map((r) => r.medica.id)).not.toContain(primeira);
+    expect(depois.totalAvaliadas).toBe(MEDICAS.length - 1);
   });
 
   it('nota ajustada puxa poucas avaliações para a média', () => {

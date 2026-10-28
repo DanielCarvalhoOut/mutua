@@ -9,7 +9,7 @@ export const PERFIL_EXEMPLO: PerfilPaciente = {
   preventivoHaAnos: 1,
   historicoFamiliarMama: false,
   vivencias: ['climaterio', 'maternidade'],
-  especialidade: 'qualquer',
+  especialidades: [],
   preferencias: ['teleconsulta', 'sus'],
 };
 
@@ -17,6 +17,9 @@ interface PerfilContexto {
   perfil: PerfilPaciente | null;
   salvar(perfil: PerfilPaciente): void;
   atualizar(parcial: Partial<PerfilPaciente>): void;
+  /** Médicas que não aparecem mais nas recomendações desta paciente. */
+  ocultas: string[];
+  ocultarMedica(id: string): void;
   limpar(): void;
 }
 
@@ -44,12 +47,25 @@ export function PerfilProvider({ children }: { children: ReactNode }) {
     },
     [repo],
   );
+  const [ocultas, setOcultas] = useState<string[]>(() => repo.medicasOcultas());
+  const ocultarMedica = useCallback(
+    (id: string) => {
+      repo.ocultarMedica(id);
+      setOcultas(repo.medicasOcultas());
+    },
+    [repo],
+  );
+
   const limpar = useCallback(() => {
     repo.limpar();
     setPerfil(null);
+    setOcultas([]);
   }, [repo]);
 
-  const valor = useMemo(() => ({ perfil, salvar, atualizar, limpar }), [perfil, salvar, atualizar, limpar]);
+  const valor = useMemo(
+    () => ({ perfil, salvar, atualizar, ocultas, ocultarMedica, limpar }),
+    [perfil, salvar, atualizar, ocultas, ocultarMedica, limpar],
+  );
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
 }
 

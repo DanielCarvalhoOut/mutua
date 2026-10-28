@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { usePerfil } from '@/app/perfil';
 import { ESPECIALIDADES, PREFERENCIAS, VIVENCIAS, listar } from '@/domain/catalogo';
 import type { EspecialidadeId, PerfilPaciente, PreferenciaId, TempoDesdeExame, VivenciaId } from '@/domain/types';
@@ -26,6 +26,8 @@ const alternar = <T,>(lista: T[], item: T) => (lista.includes(item) ? lista.filt
 export function Cadastro() {
   const navegar = useNavigate();
   const { perfil, salvar } = usePerfil();
+  // Vindo de "Criar perfil", começa em branco; vindo de "Editar", parte do perfil salvo.
+  const novo = (useLocation().state as { novo?: boolean } | null)?.novo === true;
   const [passo, setPasso] = useState(0);
   const [direcao, setDirecao] = useState<'avancar' | 'voltar'>('avancar');
   const irPara = (n: number) => {
@@ -34,13 +36,13 @@ export function Cadastro() {
   };
   const [r, setR] = useState<Rascunho>(
     () =>
-      perfil ?? {
+      (!novo && perfil) || {
         idade: null,
         mamografiaHaAnos: undefined,
         preventivoHaAnos: undefined,
         historicoFamiliarMama: false,
         vivencias: [],
-        especialidade: 'qualquer',
+        especialidades: [],
         preferencias: [],
       },
   );
@@ -52,7 +54,8 @@ export function Cadastro() {
   const avancar = () => {
     if (passo < 2) return irPara(passo + 1);
     salvar({ ...r, mamografiaHaAnos: r.mamografiaHaAnos ?? null, preventivoHaAnos: r.preventivoHaAnos ?? null });
-    navegar('/recomendacoes');
+    // Perfil novo ganha o tour guiado na primeira vez que vê as recomendações.
+    navegar('/recomendacoes', { state: { tour: novo } });
   };
 
   return (
@@ -139,16 +142,16 @@ export function Cadastro() {
         {passo === 2 && (
           <>
             <div className="campo">
-              <span className="campo-rotulo">Que especialidade você procura?</span>
+              <span className="campo-rotulo">Que especialidades você procura?</span>
               <div className="linha-wrap">
-                <ChipOpcao ativo={r.especialidade === 'qualquer'} onClick={() => mudar({ especialidade: 'qualquer' })}>
+                <ChipOpcao ativo={r.especialidades.length === 0} onClick={() => mudar({ especialidades: [] })}>
                   Ainda não sei
                 </ChipOpcao>
                 {listar(ESPECIALIDADES).map(({ id, rotulo }) => (
                   <ChipOpcao
                     key={id}
-                    ativo={r.especialidade === id}
-                    onClick={() => mudar({ especialidade: id as EspecialidadeId })}
+                    ativo={r.especialidades.includes(id as EspecialidadeId)}
+                    onClick={() => mudar({ especialidades: alternar<EspecialidadeId>(r.especialidades, id as EspecialidadeId) })}
                   >
                     {rotulo}
                   </ChipOpcao>
