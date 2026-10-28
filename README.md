@@ -1,6 +1,6 @@
 # Mútua
 
-**Cuidado de quem também viveu.**
+**Cuidar é uma troca.**
 
 Recomendação e priorização de consultas e exames com médicas que compartilham vivências de saúde com a paciente: climatério/menopausa, endometriose, SOP, maternidade atípica, câncer de mama e outras. Projeto do IV CodeCraft (PUC Goiás), tema *Ciência e Tecnologia para a Saúde Delas*.
 
@@ -10,7 +10,7 @@ Recomendação e priorização de consultas e exames com médicas que compartilh
 
 | Tela | O que mostra |
 |---|---|
-| Boas-vindas | Proposta, autodeclaração ("espaço para todas as mulheres") e atalho com perfil de exemplo |
+| Boas-vindas | Proposta, autodeclaração ("espaço de mulheres para mulheres") e atalho com perfil de exemplo |
 | Cadastro (3 passos) | Idade e últimos exames → vivências → especialidade e preferências de atendimento |
 | Minhas médicas | **O que priorizar agora** (mamografia, preventivo) e **top 5** com % de afinidade, o que tem e o que não tem do que você pediu, e "por que recomendamos mesmo assim" quando nenhuma compartilha todas as vivências |
 | Perfil da médica | CRM e RQE verificados, composição do match com pesos, vivências autodeclaradas (LGPD), resumo automático das avaliações, nota entre mulheres parecidas, critérios de respeito e avaliações protegidas |

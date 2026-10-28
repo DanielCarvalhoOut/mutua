@@ -71,9 +71,78 @@ a {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
   padding-block: 20px 28px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+}
+.tela-estreita {
+  width: 100%;
+  max-width: 600px;
+  margin-inline: auto;
+}
+
+/* Entrada de tela: desliza do lado de onde a usuária veio. Só "backwards", para não
+   deixar transform aplicado depois (isso quebraria modais e barras fixas). */
+.transicao-tela {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  animation: entra-avancar var(--t-tela) var(--ease) backwards;
+}
+.transicao-tela[data-direcao='voltar'],
+.passo-anim[data-direcao='voltar'] {
+  animation-name: entra-voltar;
+}
+.passo-anim {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: entra-avancar 260ms var(--ease) backwards;
+}
+@keyframes entra-avancar {
+  from {
+    opacity: 0;
+    transform: translate3d(18px, 0, 0);
+  }
+}
+@keyframes entra-voltar {
+  from {
+    opacity: 0;
+    transform: translate3d(-18px, 0, 0);
+  }
+}
+@keyframes sobe {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+}
+@keyframes aparece {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes cresce {
+  from {
+    width: 0;
+  }
+}
+@keyframes enche-anel {
+  from {
+    stroke-dashoffset: var(--circ);
+  }
+}
+@keyframes pulsa {
+  50% {
+    transform: scale(1.22);
+  }
+}
+/* Itens de lista entram em cascata; --i é a posição. */
+.entra {
+  animation: sobe 420ms var(--ease) backwards;
+  animation-delay: calc(var(--i, 0) * 70ms);
 }
 
 .secao {
@@ -146,10 +215,12 @@ a {
   font-size: var(--fs-md);
   cursor: pointer;
   text-decoration: none;
-  transition: background var(--transicao), transform var(--transicao), opacity var(--transicao);
+  transition: background var(--t-rapida) var(--ease), color var(--t-rapida) var(--ease),
+    box-shadow var(--t-rapida) var(--ease), transform 120ms var(--ease), opacity var(--t-rapida);
+  -webkit-tap-highlight-color: transparent;
 }
-.btn:active {
-  transform: scale(0.98);
+.btn:active:not([disabled]) {
+  transform: scale(0.97);
 }
 .btn[disabled] {
   opacity: 0.45;
@@ -159,16 +230,29 @@ a {
   background: var(--brand-primary);
   color: var(--on-brand);
 }
-.btn-primario:hover:not([disabled]) {
-  background: var(--brand-hover);
-}
 .btn-secundario {
   background: var(--surface-card);
   color: var(--brand-primary);
   box-shadow: inset 0 0 0 1.5px var(--brand-primary);
 }
-.btn-secundario:hover:not([disabled]) {
-  background: color-mix(in srgb, var(--brand-primary) 8%, var(--surface-card));
+/* Hover só em quem tem mouse: no toque, o estado "preso" confunde. */
+@media (hover: hover) {
+  .btn-primario:hover:not([disabled]) {
+    background: var(--brand-hover);
+  }
+  .btn-secundario:hover:not([disabled]) {
+    background: color-mix(in srgb, var(--brand-primary) 8%, var(--surface-card));
+  }
+  .btn-icone:hover {
+    background: var(--surface-sunken);
+  }
+  .chip-opcao:hover {
+    border-color: var(--brand-primary);
+  }
+  .rec-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(74, 32, 59, 0.06), 0 12px 28px rgba(74, 32, 59, 0.1);
+  }
 }
 .btn-texto {
   background: none;
@@ -186,9 +270,10 @@ a {
   background: none;
   color: var(--text-primary);
   cursor: pointer;
+  transition: background var(--t-rapida) var(--ease), transform 120ms var(--ease);
 }
-.btn-icone:hover {
-  background: var(--surface-sunken);
+.btn-icone:active {
+  transform: scale(0.92);
 }
 .btn-bloco {
   width: 100%;
@@ -203,6 +288,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  transition: transform 220ms var(--ease), box-shadow 220ms var(--ease);
 }
 .painel {
   background: var(--surface-sunken);
@@ -240,15 +326,34 @@ a {
   background: var(--surface-card);
   color: var(--text-primary);
   cursor: pointer;
-  transition: background var(--transicao), border-color var(--transicao);
+  -webkit-tap-highlight-color: transparent;
+  transition: background var(--t-rapida) var(--ease), border-color var(--t-rapida) var(--ease),
+    color var(--t-rapida) var(--ease), transform 120ms var(--ease);
 }
-.chip-opcao:hover {
-  border-color: var(--brand-primary);
+.chip-opcao:active {
+  transform: scale(0.95);
 }
 .chip-opcao[aria-pressed='true'] {
   background: var(--brand-primary);
   border-color: var(--brand-primary);
   color: var(--on-brand);
+}
+/* O check abre por largura e compensa o gap enquanto está fechado. */
+.chip-check {
+  display: inline-grid;
+  place-items: center;
+  width: 0;
+  margin-right: -6px;
+  opacity: 0;
+  transform: scale(0.4) rotate(-20deg);
+  transition: width var(--t-rapida) var(--ease), margin var(--t-rapida) var(--ease), opacity var(--t-rapida),
+    transform 240ms var(--ease);
+}
+.chip-opcao[aria-pressed='true'] .chip-check {
+  width: 16px;
+  margin-right: 0;
+  opacity: 1;
+  transform: none;
 }
 
 /* Lista tem / não tem */
@@ -304,7 +409,8 @@ a {
 }
 .anel-valor {
   stroke: var(--match-accent);
-  transition: stroke-dashoffset 600ms ease;
+  transition: stroke-dashoffset 600ms var(--ease);
+  animation: enche-anel 900ms var(--ease) 120ms backwards;
 }
 .anel-texto {
   position: absolute;
@@ -349,6 +455,8 @@ a {
   height: 100%;
   border-radius: inherit;
   background: var(--brand-primary);
+  transition: width 500ms var(--ease);
+  animation: cresce 800ms var(--ease) 150ms backwards;
 }
 .barra-linha {
   display: grid;
@@ -420,9 +528,14 @@ a {
   padding: 4px;
   cursor: pointer;
   color: var(--line);
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--t-rapida) var(--ease);
 }
 .estrelas-input button[aria-pressed='true'] {
   color: var(--match-accent);
+}
+.estrelas-input button[aria-pressed='true'] svg {
+  animation: pulsa 260ms var(--ease);
 }
 
 /* Formulários */
@@ -476,6 +589,7 @@ textarea.entrada {
   height: 5px;
   border-radius: var(--radius-pill);
   background: var(--line);
+  transition: background 320ms var(--ease);
 }
 .passos span[data-ativo='true'] {
   background: var(--brand-primary);
@@ -522,9 +636,17 @@ textarea.entrada {
   font-weight: 700;
   color: var(--text-secondary);
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color var(--t-rapida) var(--ease);
+}
+.nav a svg {
+  transition: transform var(--t-rapida) var(--ease);
 }
 .nav a.active {
   color: var(--brand-primary);
+}
+.nav a.active svg {
+  transform: translateY(-1px) scale(1.08);
 }
 
 /* Avisos */
@@ -555,6 +677,7 @@ textarea.entrada {
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  animation: aparece 200ms var(--ease);
 }
 .sheet {
   width: 100%;
@@ -567,11 +690,11 @@ textarea.entrada {
   padding-block: 20px calc(20px + env(safe-area-inset-bottom, 0px));
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  animation: subir 220ms ease;
+  animation: subir 320ms var(--ease);
 }
 @keyframes subir {
   from {
-    transform: translateY(24px);
+    transform: translateY(40px);
     opacity: 0;
   }
 }
@@ -579,7 +702,8 @@ textarea.entrada {
   position: fixed;
   left: 50%;
   bottom: calc(84px + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
+  translate: -50% 0;
+  animation: sobe 260ms var(--ease);
   z-index: 30;
   background: var(--text-primary);
   color: var(--bg-canvas);
@@ -596,6 +720,69 @@ textarea.entrada {
   place-items: center;
   padding: 48px 0;
   color: var(--text-secondary);
+}
+
+.logo-link {
+  display: inline-flex;
+  align-self: flex-start;
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity var(--t-rapida), transform 120ms var(--ease);
+}
+.logo-link:active {
+  transform: scale(0.96);
+}
+
+/* Celulares pequenos (320–360px): menos respiro lateral e tipografia um pouco menor. */
+@media (max-width: 360px) {
+  :root {
+    --gutter: 12px;
+    --fs-xl: 1.4rem;
+  }
+  .chip {
+    font-size: 0.8125rem;
+  }
+  .chip-opcao {
+    padding: 8px 12px;
+  }
+}
+
+/* Tablet e desktop: a coluna cresce e as telas de leitura ganham duas colunas. */
+@media (min-width: 768px) {
+  :root {
+    --gutter: 32px;
+    --fs-xl: 1.875rem;
+  }
+  .app {
+    max-width: 960px;
+  }
+  .tela {
+    padding-block: 28px 40px;
+    gap: 24px;
+  }
+  .topo {
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(32px, env(safe-area-inset-right, 0px));
+  }
+  .acoes-fixas {
+    justify-content: center;
+  }
+  .acoes-fixas .btn {
+    flex: 0 1 280px;
+  }
+  .nav {
+    grid-template-columns: repeat(2, 200px);
+    justify-content: center;
+  }
+  .sheet {
+    max-width: 520px;
+    border-radius: 24px;
+    margin-bottom: 32px;
+  }
+  .fundo-modal {
+    align-items: center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

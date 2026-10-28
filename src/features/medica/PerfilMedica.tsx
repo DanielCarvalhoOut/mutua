@@ -74,6 +74,9 @@ export function PerfilMedica() {
     <>
       <Topo titulo={`Dra. ${m.nome}`} voltarPara="/recomendacoes" />
       <main className="tela">
+        {/* Duas colunas no tablet/desktop: quem ela é à esquerda, o que dizem dela à direita. */}
+        <div className="med-grade">
+        <div className="med-col">
         <section className="med-hero">
           <Avatar nome={m.nome} tamanho={76} />
           <div className="med-hero-id">
@@ -145,6 +148,8 @@ export function PerfilMedica() {
           </div>
         </section>
 
+        </div>
+        <div className="med-col">
         <section className="secao">
           <div className="linha" style={{ justifyContent: 'space-between' }}>
             <h2 className="secao-titulo">Avaliações de mulheres</h2>
@@ -186,8 +191,8 @@ export function PerfilMedica() {
           </p>
 
           <div className="med-lista">
-            {lista.map((a) => (
-              <CartaoAvaliacao key={a.id} avaliacao={a} />
+            {lista.map((a, i) => (
+              <CartaoAvaliacao key={a.id} avaliacao={a} indice={i} />
             ))}
           </div>
           <Link to={`/medica/${m.id}/avaliar`} className="btn btn-secundario btn-bloco">
@@ -195,6 +200,8 @@ export function PerfilMedica() {
             Avaliar minha consulta com Dra. {primeiroNome}
           </Link>
         </section>
+        </div>
+        </div>
       </main>
 
       <div className="acoes-fixas">
@@ -222,10 +229,10 @@ export function PerfilMedica() {
   );
 }
 
-function CartaoAvaliacao({ avaliacao: a }: { avaliacao: Avaliacao }) {
+function CartaoAvaliacao({ avaliacao: a, indice }: { avaliacao: Avaliacao; indice: number }) {
   const data = new Date(a.data.length === 10 ? `${a.data}T12:00:00` : a.data);
   return (
-    <article className="card med-avaliacao">
+    <article className="card med-avaliacao entra" style={{ ['--i' as string]: Math.min(indice, 5) }}>
       <div className="linha" style={{ justifyContent: 'space-between' }}>
         <Estrelas nota={a.nota} tamanho={15} />
         <span className="texto-sec">{data.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}</span>

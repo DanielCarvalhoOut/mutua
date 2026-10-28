@@ -18,7 +18,7 @@ export function BoasVindas() {
         {/* Símbolo em imagem e nome em texto: o nome segue a cor do tema (claro e escuro). */}
         <img src="./logo-simbolo.png" alt="" className="bv-logo" />
         <span className="bv-nome">Mútua</span>
-        <p className="bv-slogan">Cuidado de quem também viveu.</p>
+        <p className="bv-slogan">Cuidar é uma troca.</p>
       </div>
 
       <div className="bv-pontos">
@@ -59,7 +59,7 @@ export function BoasVindas() {
           Ver com um perfil de exemplo
         </button>
         <p className="texto-sec bv-legal">
-          A Mútua é um espaço para todas as mulheres, cis e trans. Ao continuar, você declara que é mulher.
+          A Mútua é um espaço de mulheres para mulheres. Ao continuar, você confirma que é mulher.
         </p>
       </div>
       <p className="faixa-demo">Protótipo do IV CodeCraft · médicas e avaliações fictícias</p>

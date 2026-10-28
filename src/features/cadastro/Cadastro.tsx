@@ -27,6 +27,11 @@ export function Cadastro() {
   const navegar = useNavigate();
   const { perfil, salvar } = usePerfil();
   const [passo, setPasso] = useState(0);
+  const [direcao, setDirecao] = useState<'avancar' | 'voltar'>('avancar');
+  const irPara = (n: number) => {
+    setDirecao(n > passo ? 'avancar' : 'voltar');
+    setPasso(n);
+  };
   const [r, setR] = useState<Rascunho>(
     () =>
       perfil ?? {
@@ -45,7 +50,7 @@ export function Cadastro() {
     passo !== 0 || (r.idade !== null && r.idade >= 12 && r.idade <= 110 && r.mamografiaHaAnos !== undefined && r.preventivoHaAnos !== undefined);
 
   const avancar = () => {
-    if (passo < 2) return setPasso(passo + 1);
+    if (passo < 2) return irPara(passo + 1);
     salvar({ ...r, mamografiaHaAnos: r.mamografiaHaAnos ?? null, preventivoHaAnos: r.preventivoHaAnos ?? null });
     navegar('/recomendacoes');
   };
@@ -53,15 +58,17 @@ export function Cadastro() {
   return (
     <>
       {/* Em passos internos, "voltar" retorna um passo em vez de sair do cadastro. */}
-      <Topo titulo={TITULOS[passo]} voltarPara="/" aoVoltar={passo > 0 ? () => setPasso(passo - 1) : undefined}>
+      <Topo titulo={TITULOS[passo]} voltarPara="/" aoVoltar={passo > 0 ? () => irPara(passo - 1) : undefined}>
         <span className="texto-sec num">{passo + 1}/3</span>
       </Topo>
-      <main className="tela">
+      <main className="tela tela-estreita">
         <div className="passos" aria-hidden>
           {TITULOS.map((t, i) => (
             <span key={t} data-ativo={i <= passo} />
           ))}
         </div>
+
+        <div key={passo} className="passo-anim" data-direcao={direcao}>
 
         {passo === 0 && (
           <>
@@ -164,11 +171,12 @@ export function Cadastro() {
             </div>
           </>
         )}
+        </div>
       </main>
 
       <div className="acoes-fixas">
         {passo > 0 && (
-          <button type="button" className="btn btn-secundario" onClick={() => setPasso(passo - 1)}>
+          <button type="button" className="btn btn-secundario" onClick={() => irPara(passo - 1)}>
             Voltar
           </button>
         )}

@@ -1,3 +1,18 @@
+.med-grade,
+.med-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+@media (min-width: 768px) {
+  .med-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 32px;
+    align-items: start;
+  }
+}
 .med-hero {
   display: flex;
   gap: 16px;

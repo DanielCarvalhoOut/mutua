@@ -1,19 +1,20 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import type { NivelPrioridade } from '@/domain/prioridade';
 import { Estrela, Icone } from './Icone';
 
 export const decimal = (v: number, casas = 1) => v.toFixed(casas).replace('.', ',');
 export const pct = (v: number) => `${Math.round(v * 100)}%`;
 
+/** Logo clicável: sempre leva à tela de abertura, com a marca e o slogan. */
 export function Logo({ tamanho = 36, comNome = true }: { tamanho?: number; comNome?: boolean }) {
   return (
-    <span className="linha" style={{ gap: 10 }}>
-      <img src="./logo-simbolo.png" alt={comNome ? '' : 'Mútua'} height={tamanho} style={{ height: tamanho, width: 'auto' }} />
+    <Link to="/" className="logo-link linha" style={{ gap: 10 }} aria-label="Mútua, ir para o início">
+      <img src="./logo-simbolo.png" alt="" height={tamanho} style={{ height: tamanho, width: 'auto' }} />
       {comNome && (
         <span style={{ fontWeight: 800, fontSize: tamanho * 0.62, letterSpacing: '-0.01em' }}>Mútua</span>
       )}
-    </span>
+    </Link>
   );
 }
 
@@ -32,7 +33,12 @@ export function AnelMatch({ valor, tamanho = 64, legenda = 'afinidade' }: { valo
   const raio = (tamanho - traco) / 2;
   const circ = 2 * Math.PI * raio;
   return (
-    <span className="anel" style={{ width: tamanho, height: tamanho }} role="img" aria-label={`${valor}% de ${legenda}`}>
+    <span
+      className="anel"
+      style={{ width: tamanho, height: tamanho, ['--circ' as string]: circ }}
+      role="img"
+      aria-label={`${valor}% de ${legenda}`}
+    >
       <svg width={tamanho} height={tamanho}>
         <circle className="anel-trilho" cx={tamanho / 2} cy={tamanho / 2} r={raio} fill="none" strokeWidth={traco} />
         <circle
@@ -120,6 +126,7 @@ export function Topo({
       </button>
       <span className="topo-titulo">{titulo}</span>
       {children}
+      <Logo tamanho={22} comNome={false} />
     </header>
   );
 }
@@ -127,7 +134,10 @@ export function Topo({
 export function ChipOpcao({ ativo, onClick, children }: { ativo: boolean; onClick: () => void; children: ReactNode }) {
   return (
     <button type="button" className="chip chip-opcao" aria-pressed={ativo} onClick={onClick}>
-      {ativo && <Icone nome="check" tamanho={16} />}
+      {/* O check fica sempre no DOM e abre por largura: o chip cresce suave, sem pulo. */}
+      <span className="chip-check" aria-hidden>
+        <Icone nome="check" tamanho={16} />
+      </span>
       {children}
     </button>
   );
@@ -136,7 +146,7 @@ export function ChipOpcao({ ativo, onClick, children }: { ativo: boolean; onClic
 export function Toast({ mensagem, aoFechar }: { mensagem: string | null; aoFechar: () => void }) {
   useEffect(() => {
     if (!mensagem) return;
-    const t = setTimeout(aoFechar, 2800);
+    const t = setTimeout(aoFechar, 3200);
     return () => clearTimeout(t);
   }, [mensagem, aoFechar]);
   if (!mensagem) return null;

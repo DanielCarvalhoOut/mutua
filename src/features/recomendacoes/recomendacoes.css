@@ -7,14 +7,39 @@
   font-size: var(--fs-xl);
   font-weight: 800;
 }
+.rec-grade {
+  display: grid;
+  gap: 12px;
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .rec-grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+/* Filtro rola de lado até a borda da tela, sem empurrar a página. */
 .rec-filtro {
   display: flex;
   gap: 8px;
   overflow-x: auto;
   padding-bottom: 4px;
-  margin-inline: -16px;
-  padding-inline: 16px;
+  margin-inline: calc(-1 * var(--gutter));
+  padding-inline: var(--gutter);
   scrollbar-width: none;
+  scroll-snap-type: x proximity;
+}
+.rec-filtro::-webkit-scrollbar {
+  display: none;
+}
+.rec-filtro .chip {
+  scroll-snap-align: start;
+}
+@media (min-width: 768px) {
+  .rec-filtro {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
 }
 .rec-filtro .chip {
   flex: none;

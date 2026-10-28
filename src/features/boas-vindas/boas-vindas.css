@@ -2,6 +2,19 @@
   justify-content: space-between;
   gap: 28px;
   padding-block: 40px 8px;
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+}
+/* A marca entra primeiro, o resto chega logo depois. */
+.bv-marca {
+  animation: sobe 520ms var(--ease) backwards;
+}
+.bv-pontos {
+  animation: sobe 520ms var(--ease) 120ms backwards;
+}
+.bv-acoes {
+  animation: sobe 520ms var(--ease) 220ms backwards;
 }
 .bv-marca {
   display: flex;

@@ -27,6 +27,11 @@
   --radius-pill: 999px;
   --shadow-card: 0 1px 2px rgba(74, 32, 59, 0.06), 0 6px 20px rgba(74, 32, 59, 0.06);
   --transicao: 150ms ease;
+  /* Movimento: saída rápida e chegada suave, como um gesto de mão. */
+  --ease: cubic-bezier(0.22, 0.8, 0.24, 1);
+  --t-rapida: 180ms;
+  --t-tela: 300ms;
+  --gutter: 16px;
 
   --fs-xs: 0.75rem;
   --fs-sm: 0.875rem;

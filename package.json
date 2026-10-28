@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Mútua: cuidado de quem também viveu.",
+  "description": "Mútua: cuidar é uma troca.",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc --noEmit && vite build",

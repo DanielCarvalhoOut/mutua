@@ -36,14 +36,16 @@ export function Recomendacoes() {
       {prioridades.length > 0 && (
         <section className="secao" aria-labelledby="prioridades">
           <h2 className="rotulo" id="prioridades">O que priorizar agora</h2>
-          {prioridades.map((p) => (
-            <CardPrioridade
-              key={p.exame}
-              prioridade={p}
-              ativa={perfil.especialidade === p.especialidadeSugerida}
-              aoBuscar={() => escolherEspecialidade(p.especialidadeSugerida)}
-            />
-          ))}
+          <div className="rec-grade">
+            {prioridades.map((p) => (
+              <CardPrioridade
+                key={p.exame}
+                prioridade={p}
+                ativa={perfil.especialidade === p.especialidadeSugerida}
+                aoBuscar={() => escolherEspecialidade(p.especialidadeSugerida)}
+              />
+            ))}
+          </div>
         </section>
       )}
 
@@ -75,9 +77,12 @@ export function Recomendacoes() {
                 </span>
               </div>
             )}
-            {resultado.recomendacoes.map((r, i) => (
-              <CardRecomendacao key={r.medica.id} recomendacao={r} posicao={i + 1} />
-            ))}
+            {/* A chave na especialidade reinicia a cascata de entrada quando o filtro muda. */}
+            <div className="rec-grade" key={perfil.especialidade}>
+              {resultado.recomendacoes.map((r, i) => (
+                <CardRecomendacao key={r.medica.id} recomendacao={r} posicao={i + 1} />
+              ))}
+            </div>
             <p className="aviso">
               <Icone nome="info" tamanho={18} />
               Qualificação e avaliações pesam mais que a vivência no cálculo. A vivência aproxima e desempata.
@@ -92,7 +97,7 @@ export function Recomendacoes() {
 
 function CardPrioridade({ prioridade: p, ativa, aoBuscar }: { prioridade: Prioridade; ativa: boolean; aoBuscar: () => void }) {
   return (
-    <article className="card card-prioridade">
+    <article className="card card-prioridade entra">
       <div className="linha" style={{ justifyContent: 'space-between' }}>
         <h3 className="rec-prio-titulo">{p.titulo}</h3>
         <NivelPill nivel={p.nivel} />

@@ -51,7 +51,7 @@ export function NovaAvaliacao() {
   return (
     <>
       <Topo titulo="Avaliar consulta" />
-      <form className="tela" onSubmit={publicar} id="form-avaliacao">
+      <form className="tela tela-estreita" onSubmit={publicar} id="form-avaliacao">
         <div className="campo">
           <span className="campo-rotulo">Como foi a consulta?</span>
           <div className="estrelas-input linha" role="group" aria-label="Nota">

@@ -30,7 +30,7 @@ export function MeuPerfil() {
   const prioridades = priorizar(perfil);
 
   return (
-    <main className="tela">
+    <main className="tela tela-estreita">
       <Logo tamanho={30} />
       <h1 style={{ fontSize: 'var(--fs-xl)', fontWeight: 800 }}>Meu perfil</h1>
 
@@ -114,7 +114,7 @@ export function MeuPerfil() {
           </button>
         )}
       </section>
-      <p className="faixa-demo">Mútua · cuidado de quem também viveu</p>
+      <p className="faixa-demo">Mútua · cuidar é uma troca</p>
     </main>
   );
 }

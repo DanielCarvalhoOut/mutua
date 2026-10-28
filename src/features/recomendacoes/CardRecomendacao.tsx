@@ -10,7 +10,7 @@ export function CardRecomendacao({ recomendacao: r, posicao }: { recomendacao: R
   const temVivenciaPedida = r.vivenciasEmComum.length + r.vivenciasFaltando.length > 0;
 
   return (
-    <article className="card rec-card">
+    <article className="card rec-card entra" style={{ ['--i' as string]: posicao - 1 }}>
       <div className="rec-card-topo">
         <Avatar nome={m.nome} tamanho={52} />
         <div className="rec-card-id">

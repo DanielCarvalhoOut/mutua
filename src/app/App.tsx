@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
-import { HashRouter, Navigate, NavLink, Outlet, Route, Routes, useLocation } from 'react-router-dom';
+import { HashRouter, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigationType } from 'react-router-dom';
 import { BoasVindas } from '@/features/boas-vindas/BoasVindas';
 import { Cadastro } from '@/features/cadastro/Cadastro';
 import { NovaAvaliacao } from '@/features/avaliacao/NovaAvaliacao';
@@ -17,14 +17,14 @@ export function App() {
         <RolarParaTopo />
         <div className="app">
           <Routes>
-            <Route path="/" element={<BoasVindas />} />
-            <Route path="/comecar" element={<Cadastro />} />
+            <Route path="/" element={<Animada><BoasVindas /></Animada>} />
+            <Route path="/comecar" element={<Animada><Cadastro /></Animada>} />
             <Route element={<ComNavegacao />}>
-              <Route path="/recomendacoes" element={<ExigePerfil><Recomendacoes /></ExigePerfil>} />
-              <Route path="/perfil" element={<MeuPerfil />} />
+              <Route path="/recomendacoes" element={<Animada><ExigePerfil><Recomendacoes /></ExigePerfil></Animada>} />
+              <Route path="/perfil" element={<Animada><MeuPerfil /></Animada>} />
             </Route>
-            <Route path="/medica/:id" element={<PerfilMedica />} />
-            <Route path="/medica/:id/avaliar" element={<NovaAvaliacao />} />
+            <Route path="/medica/:id" element={<Animada><PerfilMedica /></Animada>} />
+            <Route path="/medica/:id/avaliar" element={<Animada><NovaAvaliacao /></Animada>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
@@ -48,6 +48,20 @@ function ComNavegacao() {
         </NavLink>
       </nav>
     </>
+  );
+}
+
+/**
+ * Entrada de tela: desliza do lado de onde a usuária veio (avançar ou voltar).
+ * A chave no caminho garante a animação também entre perfis de médicas diferentes.
+ */
+function Animada({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation();
+  const tipo = useNavigationType();
+  return (
+    <div key={pathname} className="transicao-tela" data-direcao={tipo === 'POP' ? 'voltar' : 'avancar'}>
+      {children}
+    </div>
   );
 }
 
